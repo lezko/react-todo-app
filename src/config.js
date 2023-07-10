@@ -4,7 +4,7 @@
 // setApiUrl('https://1b69-83-139-159-121.ngrok-free.app');
 
 if (!getApiUrl()) {
-    setApiUrl('');
+    setApiUrl('http://82.148.16.142:8080');
 }
 
 export function getApiUrl() {
