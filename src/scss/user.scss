@@ -1,0 +1,16 @@
+.user {
+  padding: 10px;
+
+  &__name {
+    font-weight: 700;
+    font-size: 1.4rem;
+    display: flex;
+    align-items: center;
+  }
+  .star {
+    margin-left: 5px;
+    font-size: .7rem;
+    display: grid;
+    place-content: center;
+  }
+}

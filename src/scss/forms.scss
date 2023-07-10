@@ -1,0 +1,59 @@
+button {
+  background-color: inherit;
+  color: inherit;
+  border: 1px solid $light;
+  padding: 5px 15px;
+  transition: .3s;
+
+  &:hover {
+    cursor: pointer;
+    background-color: $bg-input;
+  }
+  &:disabled {
+    pointer-events: none;
+  }
+  &:disabled:hover {
+    background-color: unset;
+  }
+}
+
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+input:-webkit-autofill:active {
+  -webkit-box-shadow: 0 0 0 30px $bg-input-autofilled inset !important;
+}
+
+input:-webkit-autofill {
+  -webkit-text-fill-color: $light !important;
+}
+
+input {
+  background-color: $bg-input;
+  color: inherit;
+  border: none;
+  outline: none;
+  padding: 10px;
+}
+
+.login-form, .sign-up-form {
+
+  max-width: 350px;
+  margin: 100px auto 0;
+
+  label {
+    display: block;
+    margin-bottom: 5px;
+  }
+
+  input {
+    display: block;
+    margin-bottom: 10px;
+    width: 100%;
+  }
+
+  .error {
+    margin-top: 5px;
+  }
+
+}

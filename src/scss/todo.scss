@@ -1,0 +1,26 @@
+.todo {
+  display: grid;
+  padding-block: 10px;
+  grid-template-columns: 1fr auto;
+  row-gap: 5px;
+  grid-template-areas:
+  "title buttons"
+  "desc desc"
+  "author author"
+    ;
+
+  &__title {
+    grid-area: title;
+    font-size: 1.2rem;
+    font-weight: 700;
+  }
+  &__description {
+    grid-area: desc;
+    font-size: .9rem;
+  }
+  &__author {
+    grid-area: author;
+    font-size: .7rem;
+  }
+}
+
