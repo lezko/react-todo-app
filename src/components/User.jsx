@@ -5,13 +5,11 @@ const User = ({user}) => {
     return (
         <div>
             <div className="user">
-                <div className="user__name">
-                    <span>{user.login}</span>
-                    {' '}
-                    <span className="star">
-                        {user.role === 'ROLE_ADMIN' && <FontAwesomeIcon icon={faStar} />}
-                    </span>
-                </div>
+                <span className="user__name">{user.login}</span>
+                {' '}
+                <span className="star">
+                        {user.role === 'ROLE_ADMIN' || true && <FontAwesomeIcon icon={faStar} />}
+                </span>
             </div>
         </div>
     );

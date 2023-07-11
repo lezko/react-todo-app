@@ -3,7 +3,7 @@ import {UserContext} from 'App';
 import {getApiUrl, setApiUrl} from 'config';
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
 import {faRightFromBracket} from '@fortawesome/free-solid-svg-icons';
-import {faXmark, faBars} from '@fortawesome/free-solid-svg-icons';
+import {faXmark, faBars, faStar} from '@fortawesome/free-solid-svg-icons';
 
 const Navbar = ({onNavigate, activePage, onLogout}) => {
     const {user, setUser} = useContext(UserContext);
@@ -95,6 +95,7 @@ const Navbar = ({onNavigate, activePage, onLogout}) => {
                     {user ?
                         <li className="user-logout-btn">
                             <span className="current-user">{user.login}</span>
+                            {user.role === 'ROLE_ADMIN' && <FontAwesomeIcon className="star" icon={faStar} />}
                             <button className="logout" onClick={logout}><FontAwesomeIcon icon={faRightFromBracket} />
                             </button>
                         </li>

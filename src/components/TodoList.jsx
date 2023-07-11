@@ -5,7 +5,7 @@ import {TodosContext} from 'pages/TodosPage';
 const TodoList = () => {
     const {todos} = useContext(TodosContext);
     if (todos.length === 0) {
-        return <h3>No todos added yet</h3>
+        return <h3 style={{textAlign: 'center', marginTop: 40}}>No todos added yet</h3>
     }
 
     return (

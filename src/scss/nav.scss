@@ -11,39 +11,60 @@ nav {
 
   // tmp
   justify-content: space-between;
+
   form {
   }
+
   ul {
     display: flex;
     align-items: center;
   }
+
   .home-link {
     color: $light;
     font-weight: 700;
     text-decoration: none;
   }
+
   button {
     border: none;
     font-weight: 700;
     font-size: .9rem;
   }
+  .buttons {max-width: 100%}
   button:hover {
     background-color: inherit;
     color: $bg-input;
   }
+
   button.active {
     text-decoration: underline;
   }
 
-  .current-user {
-    border-left: 3px solid $light;
-    display: inline-block;
-    padding-left: 10px;
-  }
-  .current-user, .logout {
+  .user-logout-btn {
     color: #bee2ff;
+    max-width: 100%;
+
+    button.logout {
+      padding-inline: 0;
+      margin-left: 15px;
+    }
   }
-  
+
+  .user-logout-btn .star {
+    width: 10px;
+    margin-left: 5px;
+  }
+
+  .current-user {
+    display: inline-grid;
+    border-left: 3px solid $light;
+    padding-left: 10px;
+    white-space: nowrap;
+    overflow-x: auto;
+    max-width: max(100px, 20vw);
+  }
+
   @media (max-width: 470px) {
     position: absolute;
     top: 0;
@@ -67,6 +88,7 @@ nav {
     ul {
       flex-direction: column;
       align-items: flex-start;
+
       button {
         padding-inline: 0;
         font-size: 1.2rem;
@@ -75,8 +97,7 @@ nav {
     .current-user {
       border-left: none;
       padding-left: 0;
-      margin-right: 10px;
-
+      max-width: unset;
     }
     .user-logout-btn {
       margin-top: 10px;
@@ -99,4 +120,8 @@ nav {
   @media (max-width: 470px) {
     display: block;
   }
+}
+
+body > *:not(#root) {
+  //display: none;
 }

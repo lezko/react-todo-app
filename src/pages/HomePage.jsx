@@ -7,7 +7,7 @@ const HomePage = () => {
             <h1>Welcome to the Todo App!</h1>
             <p>
                 This is the educational fullstack project. Enjoy adding todos to shared list and tracking progress of other users!
-                You can ask admins to grant you admin privileges if you want to edit todos created by other users. Admin users are marked with as asterisk ({<FontAwesomeIcon icon={faStar} />})
+                You can ask admins to grant you admin privileges if you want to edit todos created by other users. Admin users are marked with an asterisk ({<FontAwesomeIcon className="star" icon={faStar} />}).
             </p>
             <p>
                 <a href="https://github.com/lezko/react-todo-app">Frontend</a> by <a href="https://github.com/lezko">lezko</a><br/>
