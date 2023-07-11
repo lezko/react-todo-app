@@ -8,7 +8,7 @@ const User = ({user}) => {
                 <span className="user__name">{user.login}</span>
                 {' '}
                 <span className="star">
-                        {user.role === 'ROLE_ADMIN' || true && <FontAwesomeIcon icon={faStar} />}
+                        {user.role === 'ROLE_ADMIN' && <FontAwesomeIcon icon={faStar} />}
                 </span>
             </div>
         </div>
