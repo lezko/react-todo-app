@@ -1,10 +1,10 @@
 import {useContext, useState} from 'react';
 import {getApiUrl} from 'config';
-import {TodosContext} from 'pages/TodosPage';
-import {UserContext} from 'App';
+import {TodosContext} from 'routes/todos';
 import {getTokenFromLocalStorage} from 'utils/tokenStorage';
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
 import {faStar} from '@fortawesome/free-solid-svg-icons';
+import {UserContext} from 'hooks/user';
 
 const Todo = ({todo}) => {
     const {todos, setTodos} = useContext(TodosContext);
@@ -118,7 +118,7 @@ const Todo = ({todo}) => {
 
     const getButtonsHtml = () => {
         if (status === 'default') {
-            if (user.role === 'ROLE_ADMIN' || +user.id === +todo.creator.id) {
+            if (+user.id === +todo.creator.id) {
                 return (
                     <div className="todo_buttons">
                         <button disabled={pending} onClick={deleteTodo}>Delete</button>
@@ -140,7 +140,12 @@ const Todo = ({todo}) => {
     return (
         <div className="todo">
             {getTodoInfoHtml()}
-            <div className="todo__author">{todo.creator.login} {todo.creator.role === 'ROLE_ADMIN' && <FontAwesomeIcon icon={faStar} />}</div>
+            <div
+                className="todo__author"
+                style={{color: todo.creator.color}}
+            >
+                {todo.creator.login} {todo.creator.role === 'ROLE_ADMIN' && <FontAwesomeIcon icon={faStar} />}
+            </div>
             {getButtonsHtml()}
             <div style={{color: 'red'}}>{error}</div>
         </div>

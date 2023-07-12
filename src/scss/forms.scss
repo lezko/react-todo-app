@@ -57,3 +57,16 @@ input {
   }
 
 }
+
+input[type="color"] {
+  -webkit-appearance: none;
+  padding: 0;
+  width: 20px;
+  height: 20px;
+}
+input[type="color"]::-webkit-color-swatch-wrapper {
+  padding: 0;
+}
+input[type="color"]::-webkit-color-swatch {
+  border: none;
+}
