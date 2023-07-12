@@ -8,44 +8,38 @@ nav {
   margin-bottom: 30px;
   display: flex;
   align-items: baseline;
-
-  // tmp
   justify-content: space-between;
-
-  form {
-  }
 
   ul {
     display: flex;
     align-items: center;
   }
 
-  .home-link {
+  a {
+    display: inline-block;
     color: $light;
     font-weight: 700;
     text-decoration: none;
-  }
+    transition: .3s;
+    padding: 5px 15px;
 
-  button {
-    border: none;
-    font-weight: 700;
-    font-size: .9rem;
   }
+  .home-link {padding-inline: 0}
   .buttons {max-width: 100%}
-  button:hover {
+  a:hover {
     background-color: inherit;
     color: $bg-input;
   }
 
-  button.active {
+  a.active {
     text-decoration: underline;
   }
 
   .user-logout-btn {
-    color: #bee2ff;
+    //color: #bee2ff;
     max-width: 100%;
 
-    button.logout {
+    a.logout {
       padding-inline: 0;
       margin-left: 15px;
     }
@@ -89,7 +83,7 @@ nav {
       flex-direction: column;
       align-items: flex-start;
 
-      button {
+      a {
         padding-inline: 0;
         font-size: 1.2rem;
       }

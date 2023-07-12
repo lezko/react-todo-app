@@ -1,55 +1,26 @@
-import {useContext, useState} from 'react';
-import {UserContext} from 'App';
+import {useState} from 'react';
 import {getApiUrl, setApiUrl} from 'config';
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
-import {faRightFromBracket} from '@fortawesome/free-solid-svg-icons';
-import {faXmark, faBars, faStar} from '@fortawesome/free-solid-svg-icons';
+import {faBars, faRightFromBracket, faStar, faXmark} from '@fortawesome/free-solid-svg-icons';
+import {useUserContext} from 'hooks/user';
+import {NavLink, useNavigate} from 'react-router-dom';
 
-const Navbar = ({onNavigate, activePage, onLogout}) => {
-    const {user, setUser} = useContext(UserContext);
+const Navbar = () => {
+    const {user, setUser} = useUserContext();
+    const navigate = useNavigate();
     const pages = ['home'];
     if (user) {
-        pages.push('todos');
-    }
-    if (user?.role === 'ROLE_ADMIN') {
-        pages.push('users');
+        pages.push('todos', 'users');
     }
 
     const logout = () => {
-        // window.localStorage.removeItem('jwt-token');
-        // fetch(apiUrl + '/logout', {
-        //     method: 'post',
-        //     credentials: 'same-origin',
-        //     headers: {
-        //         'ngrok-skip-browser-warning': '69420',
-        //     }
-        // })
-        //     .then(res => {
-        //         if (res.ok) {
-        //             setUser(null);
-        //             // fixme: server bug
-        //             onNavigate('main');
-        //         } else {
-        //             console.error('Failed to logout: ' + JSON.stringify(res));
-        //         }
-        //     })
-        //     .catch(e => {
-        //         console.error(e);
-        //     });
         window.localStorage.removeItem('jwt-token');
         setUser(null);
         setMenuOpened(false);
-        onLogout();
+        navigate('/sign-in');
     };
 
-    const signUp = () => {
-        handleNavigate('signUp');
-    };
-
-    const signIn = () => {
-        handleNavigate('signIn');
-    };
-
+    // debug only
     const [input, setInput] = useState(getApiUrl || '');
     const handleClick = e => {
         e.preventDefault();
@@ -60,7 +31,6 @@ const Navbar = ({onNavigate, activePage, onLogout}) => {
     const [menuOpened, setMenuOpened] = useState(false);
     const handleNavigate = path => {
         setMenuOpened(false);
-        onNavigate(path);
     }
 
     return (
@@ -85,29 +55,28 @@ const Navbar = ({onNavigate, activePage, onLogout}) => {
                 <ul className="buttons">
                     {pages.map(p =>
                         <li key={p}>
-                            <button
-                                onClick={() => handleNavigate(p)}
-                                className={p === activePage ? 'active' : ''}
-                            >{p}</button>
+                            <NavLink onClick={handleNavigate} to={p}>{p}</NavLink>
                         </li>
                     )}
 
                     {user ?
-                        <li className="user-logout-btn">
+                        <li style={{color: user.color}} className="user-logout-btn">
                             <span className="current-user">{user.login}</span>
                             {user.role === 'ROLE_ADMIN' && <FontAwesomeIcon className="star" icon={faStar} />}
-                            <button className="logout" onClick={logout}><FontAwesomeIcon icon={faRightFromBracket} />
-                            </button>
+                            <a href="/logout" className="logout" onClick={e => {
+                                e.preventDefault();
+                                logout();
+                            }}>
+                                <FontAwesomeIcon icon={faRightFromBracket} />
+                            </a>
                         </li>
                         :
                         <>
                             <li>
-                                <button className={activePage === 'signUp' ? 'active' : ''} onClick={signUp}>sign up
-                                </button>
+                                <NavLink onClick={handleNavigate} to="/sign-up">sign up</NavLink>
                             </li>
                             <li>
-                                <button className={activePage === 'signIn' ? 'active' : ''} onClick={signIn}>sign in
-                                </button>
+                                <NavLink onClick={handleNavigate} to="/sign-in">sign in</NavLink>
                             </li>
                         </>
                     }

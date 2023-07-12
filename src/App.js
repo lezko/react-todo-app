@@ -1,14 +1,12 @@
-import {createContext, useEffect, useState} from 'react';
-import TodosPage from 'pages/TodosPage';
-import SignInPage from 'pages/SignInPage';
-import {getApiUrl, setApiUrl} from 'config';
+import {useEffect, useState} from 'react';
+import Todos from 'routes/todos';
+import SignIn from 'routes/sign-in';
+import {getApiUrl} from 'config';
 import Navbar from 'components/Navbar';
-import UserPage from 'pages/UserPage';
+import Users from 'routes/users';
 import {getTokenFromLocalStorage} from 'utils/tokenStorage';
-import HomePage from 'pages/HomePage';
-import SignUpPage from 'pages/SignUpPage';
-
-export const UserContext = createContext(null);
+import Home from 'routes/home';
+import SignUp from 'routes/sign-up';
 
 function App() {
     const [user, setUser] = useState(null);
@@ -64,9 +62,9 @@ function App() {
                     'loading...'
                     : !user
                         ?
-                        page === 'home' ? <HomePage /> : page === 'signUp' ? <SignUpPage onSignUp={() => setPage('todos')} /> : <SignInPage onLogin={() => setPage('todos')} />
+                        page === 'home' ? <Home /> : page === 'signUp' ? <SignUp onSignUp={() => setPage('todos')} /> : <SignIn onLogin={() => setPage('todos')} />
                         :
-                        page === 'home' ? <HomePage /> : page === 'todos' ? <TodosPage /> : <UserPage />
+                        page === 'home' ? <Home /> : page === 'todos' ? <Todos /> : <Users />
                 }
             </div>
         </UserContext.Provider>

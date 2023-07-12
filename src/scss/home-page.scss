@@ -1,16 +1,28 @@
 .home {
-  text-align: center;
   line-height: 1.7;
 
   h1 {
+    text-align: center;
     margin-top: 60px;
-    margin-bottom: 20px;
+    margin-bottom: 40px;
   }
   p {
-    margin-bottom: 20px;
+    text-align: center;
+  }
+  ul {
+    padding-inline: 20px;
+    max-width: 350px;
+    margin-bottom: 40px;
+  }
+  li {
+    list-style: unset;
+    font-style: italic;
+  }
+  .star-with-brackets {
+    white-space: nowrap;
   }
   & > * {
-    max-width: 400px;
+    max-width: 450px;
     margin: 0 auto;
   }
   a {

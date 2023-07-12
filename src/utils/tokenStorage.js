@@ -7,5 +7,5 @@ export function getTokenFromLocalStorage() {
     if (token) {
         return token;
     }
-    return null;
+    return '';
 }
