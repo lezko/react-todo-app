@@ -1,5 +1,6 @@
 @import "reset";
 @import "colors";
+@import "abstracts";
 @import "todo";
 @import "todo-list";
 @import "new-todo";
@@ -8,8 +9,10 @@
 @import "forms";
 @import "nav";
 @import "home-page";
+@import "profile-page";
 @import "spinner";
 @import "toggle";
+@import "reset-form";
 
 @import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,400;0,700;1,400;1,700&display=swap');
 

@@ -13,5 +13,5 @@ jobs:
       - uses: FirebaseExtended/action-hosting-deploy@v0
         with:
           repoToken: '${{ secrets.GITHUB_TOKEN }}'
-          firebaseServiceAccount: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_REACT_TODO_APP_99B24 }}'
-          projectId: react-todo-app-99b24
+          firebaseServiceAccount: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_SAYNTRYWAVE_LEZKO_TODO }}'
+          projectId: sayntrywave-lezko-todo

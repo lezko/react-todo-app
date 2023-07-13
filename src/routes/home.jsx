@@ -4,6 +4,7 @@ import {faStar} from '@fortawesome/free-solid-svg-icons';
 const Home = () => {
     return (
         <div className="home">
+            <div style={{textAlign: 'center', marginTop: 40}}><i>The app is still under construction and may be unavailable sometimes</i></div>
             <h1>Welcome to the Todo App!</h1>
             <p style={{marginBottom: 40}}>
                 This is the educational fullstack project. Enjoy adding todos to shared list and tracking progress of other users!

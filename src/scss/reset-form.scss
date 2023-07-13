@@ -1,0 +1,75 @@
+.reset-login-form {
+  margin-bottom: 30px;
+
+  .body {
+    display: flex;
+    align-items: center;
+    padding: 3px 0 5px 0;
+    // todo fancy smoothly growing bottom line
+    border-bottom: 1px solid transparent;
+  }
+  &.edit .body {
+    border-bottom-color: $light;
+  }
+  label {
+    display: block;
+  }
+  input {
+    display: block;
+    flex: 1;
+    // todo figure out padding
+    font-size: 1.3rem;
+    padding-right: 5px;
+  }
+  button {
+    min-width: 0;
+    padding: 0;
+    flex: 0 0 30px;
+    height: 30px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  button + button {
+    margin-left: 5px;
+  }
+  .spinner-container {
+    width: 30px;
+    height: 30px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    & > * {margin: 0}
+  }
+  .error {margin-top: 5px}
+}
+
+.reset-password-form {
+  label {
+    display: block;
+    margin-bottom: 5px;
+  }
+  input {
+    display: block;
+    width: 100%;
+    border-bottom: 1px solid $light;
+    padding-block: 5px;
+    font-size: 1rem;
+    margin-bottom: 15px;
+  }
+  .reset-btn {
+    //display: inline-block;
+    width: 100%;
+    font-size: .9rem;
+    padding-block: 7px;
+  }
+  button + button {
+    margin-left: 5px;
+  }
+  .error {margin-top: 5px}
+  .notification {
+    margin-top: 15px;
+    color: green;
+    text-align: center;
+  }
+}
