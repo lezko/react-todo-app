@@ -19,7 +19,7 @@ const User = ({user, onUpdate}) => {
         setColor(user.color);
         setIsAdmin(user.role === 'ROLE_ADMIN');
         setIsBanned(user.inBan);
-    }
+    };
 
     const handleColorChange = e => {
         setColor(e.target.value);
@@ -28,7 +28,7 @@ const User = ({user, onUpdate}) => {
     const handleIsAdminChange = nextIsAdmin => {
         setIsAdmin(nextIsAdmin);
         confirmUpdate({role: nextIsAdmin ? 'ROLE_ADMIN' : 'ROLE_USER'});
-    }
+    };
 
     const handleIsBannedChange = nextIsBanned => {
         setIsBanned(nextIsBanned);
@@ -57,7 +57,7 @@ const User = ({user, onUpdate}) => {
             console.error(e);
             resetData();
         }).finally(() => setPending(false));
-    }
+    };
 
     const confirmUpdate = updatedData => {
         setPending(true);
@@ -90,47 +90,47 @@ const User = ({user, onUpdate}) => {
     };
 
     return (
-        <div>
-            <div className="user">
-                <span style={{color: user.color}} className="user__name">{user.login}</span>
-                {' '}
+        <div className="user">
+            <span style={{color: user.color}} className="user__name">{user.login}</span>
+            {' '}
 
-                {loggedUser.role === 'ROLE_ADMIN' ?
-                    <>
-                        <div
-                            className="picker"
-                            style={{pointerEvents: pending ? 'none' : 'auto'}}
-                            onClick={() => {
-                                if (!pending) {
-                                    colorInputRef.current.click();
-                                }
-                            }}
-                        >
-                            <input ref={colorInputRef} value={color} onChange={handleColorChange}
-                                   type="color" />
-                            <FontAwesomeIcon className="brush" icon={faEyedropper} />
+            {loggedUser.role === 'ROLE_ADMIN' ?
+                <>
+                    <div
+                        className="picker"
+                        style={{pointerEvents: pending ? 'none' : 'auto'}}
+                        onClick={() => {
+                            if (!pending) {
+                                colorInputRef.current.click();
+                            }
+                        }}
+                    >
+                        <input ref={colorInputRef} value={color} onChange={handleColorChange}
+                               type="color" />
+                        <FontAwesomeIcon className="brush" icon={faEyedropper} />
+                    </div>
+                    {color !== user.color && !pending &&
+                        <div className="color-buttons">
+                            <FontAwesomeIcon className="btn ok" onClick={() => confirmUpdate({color})} icon={faCheck} />
+                            <FontAwesomeIcon className="btn cancel" onClick={() => setColor(user.color)}
+                                             icon={faXmark} />
                         </div>
-                        {color !== user.color && !pending &&
-                            <div className="color-buttons">
-                                <FontAwesomeIcon className="btn ok" onClick={() => confirmUpdate({color})} icon={faCheck} />
-                                <FontAwesomeIcon className="btn cancel" onClick={() => setColor(user.color)} icon={faXmark} />
-                            </div>
-                        }
+                    }
 
-                        <div className="toggles">
-                            <Toggle icon={faStar} iconColor={'gold'} active={isAdmin} setActive={handleIsAdminChange} />
-                            <Toggle icon={faBan} iconColor={'red'} active={isBanned} setActive={handleIsBannedChange} />
-                        </div>
-                    </>
-                    :
-                    <>
-                        {user.role === 'ROLE_ADMIN' && <span style={{color: user.color}} className="star"><FontAwesomeIcon icon={faStar} /></span>}
-                        {user.inBan && <FontAwesomeIcon className="ban-icon" icon={faBan} />}
-                    </>
-                }
+                    <div className="toggles">
+                        <Toggle icon={faStar} iconColor={'gold'} active={isAdmin} setActive={handleIsAdminChange} />
+                        <Toggle icon={faBan} iconColor={'red'} active={isBanned} setActive={handleIsBannedChange} />
+                    </div>
+                </>
+                :
+                <>
+                    {user.role === 'ROLE_ADMIN' &&
+                        <span style={{color: user.color}} className="star"><FontAwesomeIcon icon={faStar} /></span>}
+                    {user.inBan && <FontAwesomeIcon className="ban-icon" icon={faBan} />}
+                </>
+            }
 
-                {pending && <div className="suspense"></div>}
-            </div>
+            {pending && <div className="suspense"></div>}
         </div>
     );
 };

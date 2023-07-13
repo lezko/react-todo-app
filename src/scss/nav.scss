@@ -51,13 +51,14 @@ nav {
   }
 
   .current-user {
-    display: inline-grid;
+    display: flex;
     border-left: 3px solid $light;
     padding-left: 10px;
     white-space: nowrap;
     overflow-x: auto;
     max-width: max(100px, 20vw);
   }
+  .mobile-only-links {display: none}
 
   @media (max-width: 470px) {
     position: absolute;
@@ -92,6 +93,7 @@ nav {
       border-left: none;
       padding-left: 0;
       max-width: unset;
+      pointer-events: none;
     }
     .user-logout-btn {
       margin-top: 10px;
@@ -99,6 +101,7 @@ nav {
       align-items: center;
       font-size: 1.2rem;
     }
+    .mobile-only-links {display: block}
   }
 }
 
@@ -116,6 +119,18 @@ nav {
   }
 }
 
-body > *:not(#root) {
-  //display: none;
+.nav-dropdown {
+  ul {
+    border-radius: 0;
+  }
+  a {
+    &.active {text-decoration: underline}
+    font-weight: 700;
+    color: $light;
+  }
+  @media (max-width: 470px) {
+    .nav-dropdown {
+      display: none;
+    }
+  }
 }

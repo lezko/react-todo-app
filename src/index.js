@@ -1,7 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import 'scss/index.scss';
-import 'remove-ads';
 import {createHashRouter, Navigate, RouterProvider} from 'react-router-dom';
 import Root from 'routes/root';
 import ErrorPage from 'error-page';
@@ -13,6 +12,7 @@ import NoAuthOnlyLayout from 'security/no-auth-only-layout';
 import SignUp from 'routes/sign-up';
 import SignIn from 'routes/sign-in';
 import Profile from 'routes/profile';
+import Settings from 'routes/settings';
 
 const router = createHashRouter([
     {
@@ -55,6 +55,10 @@ const router = createHashRouter([
                     {
                         path: 'profile',
                         element: <Profile />
+                    },
+                    {
+                        path: 'settings',
+                        element: <Settings />
                     }
                 ]
             }
