@@ -1,10 +1,5 @@
-// export const apiUrl = 'http://localhost:3000/api/v1';
-// export let apiUrl = 'https://1b69-83-139-159-121.ngrok-free.app';
-
-// setApiUrl('https://1b69-83-139-159-121.ngrok-free.app');
-
 if (!getApiUrl()) {
-    setApiUrl('http://82.148.16.142:8080');
+    setApiUrl('https://82.148.16.142:8080');
 }
 
 export function getApiUrl() {

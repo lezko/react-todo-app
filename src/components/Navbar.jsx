@@ -61,7 +61,7 @@ const Navbar = () => {
 
                     {user ?
                         <li style={{color: user.color}} className="user-logout-btn">
-                            <span className="current-user">{user.login}</span>
+                            <NavLink onClick={handleNavigate} to="/profile" className="current-user">{user.login}</NavLink>
                             {user.role === 'ROLE_ADMIN' && <FontAwesomeIcon className="star" icon={faStar} />}
                             <a href="/logout" className="logout" onClick={e => {
                                 e.preventDefault();
