@@ -77,6 +77,7 @@ const Navbar = () => {
                                     borderRadius: 0,
                                     colorBgBase: 'rgb(102, 21, 95)',
                                     colorText: '7E8098FF',
+                                    controlItemBgHover: 'rgb(102, 21, 95)',
                                 }
                             }}>
                                 <Dropdown overlayClassName="nav-dropdown"

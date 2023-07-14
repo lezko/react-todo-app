@@ -5,6 +5,9 @@ import {useUserContext} from 'hooks/user';
 import {getApiUrl} from 'config';
 import {getTokenFromLocalStorage} from 'utils/tokenStorage';
 import Toggle from 'components/Toggle';
+import {Modal} from 'antd';
+import useModal from 'antd/es/modal/useModal';
+import {getSettingsFromLocalStorage} from 'utils/settingsStorage';
 
 const User = ({user, onUpdate}) => {
     const [color, setColor] = useState(user.color);
@@ -89,8 +92,12 @@ const User = ({user, onUpdate}) => {
         }).finally(() => setPending(false));
     };
 
+    const [{confirm}, contextHolder] = useModal();
+    const settings = getSettingsFromLocalStorage();
+
     return (
         <div className="user">
+            {contextHolder}
             <span style={{color: user.color}} className="user__name">{user.login}</span>
             {' '}
 
@@ -118,8 +125,50 @@ const User = ({user, onUpdate}) => {
                     }
 
                     <div className="toggles">
-                        <Toggle icon={faStar} iconColor={'gold'} active={isAdmin} setActive={handleIsAdminChange} />
-                        <Toggle icon={faBan} iconColor={'red'} active={isBanned} setActive={handleIsBannedChange} />
+                        <Toggle icon={faStar} iconColor={'gold'} active={isAdmin} setActive={handleIsAdminChange} beforeChange={() => {
+                            return new Promise((resolve, reject) => {
+                                if (!settings.confirmChangeRole) {
+                                    resolve();
+                                    return;
+                                }
+                                confirm({
+                                    title: 'Confirmation',
+                                    content: user.role === 'ROLE_ADMIN' ?
+                                        <p>You are revoking admin privileges from user <i>{user.login}</i></p> :
+                                        <p>You are granting admin privileges to user <i>{user.login}</i></p>,
+                                    okType: 'default',
+                                    onOk: () => {
+                                        resolve();
+                                    },
+                                    onCancel: () => {
+                                        reject();
+                                    },
+                                    closable: true,
+                                });
+                            });
+                        }} />
+                        <Toggle icon={faBan} iconColor={'red'} active={isBanned} setActive={handleIsBannedChange} beforeChange={() => {
+                            return new Promise((resolve, reject) => {
+                                if (!settings.confirmChangeBanned) {
+                                    resolve();
+                                    return;
+                                }
+                                confirm({
+                                    title: 'Confirmation',
+                                    content: user.inBan ?
+                                        <p>You are unbanning user <i>{user.login}</i></p> :
+                                        <p>You are banning user <i>{user.login}</i></p>,
+                                    okType: 'default',
+                                    onOk: () => {
+                                        resolve();
+                                    },
+                                    onCancel: () => {
+                                        reject();
+                                    },
+                                    closable: true,
+                                });
+                            });
+                        }} />
                     </div>
                 </>
                 :

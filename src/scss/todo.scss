@@ -15,6 +15,7 @@
     font-weight: 700;
   }
   &__description {
+    overflow-y: auto;
     grid-area: desc;
     font-size: .9rem;
   }

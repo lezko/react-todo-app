@@ -4,6 +4,7 @@ import Navbar from 'components/Navbar';
 import {getApiUrl} from 'config';
 import {getTokenFromLocalStorage} from 'utils/tokenStorage';
 import {useEffect, useState} from 'react';
+import {ConfigProvider} from 'antd';
 
 const Root = () => {
     const {user, setUser, initialPending, setInitialPending} = useUser();
@@ -51,10 +52,20 @@ const Root = () => {
 
     return (
         <div className="app">
-            <UserContext.Provider value={{user, setUser, initialPending, setInitialPending}}>
-                <Navbar />
-                <Outlet />
-            </UserContext.Provider>
+            <ConfigProvider theme={{token: {
+                    colorBgBase: 'rgb(24, 24, 36)',
+                    colorText: 'rgb(126, 128, 152)',
+                    colorWarning: '#bbca5a',
+                    borderRadius: 5,
+                    colorBorder: 'rgb(126, 128, 152)',
+                    colorPrimaryHover: 'rgb(159,162,210)',
+                    colorPrimary: 'rgb(24, 24, 36)',
+                }}}>
+                <UserContext.Provider value={{user, setUser, initialPending, setInitialPending}}>
+                    <Navbar />
+                    <Outlet />
+                </UserContext.Provider>
+            </ConfigProvider>
         </div>
     );
 };

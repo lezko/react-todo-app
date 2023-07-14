@@ -36,8 +36,8 @@ nav {
   }
 
   .user-logout-btn {
-    //color: #bee2ff;
     max-width: 100%;
+    cursor: pointer;
 
     a.logout {
       padding-inline: 0;
@@ -124,8 +124,12 @@ nav {
     border-radius: 0;
   }
   a {
+    //transition: .3s !important;
     &.active {text-decoration: underline}
     font-weight: 700;
+    &:hover {
+      color: $bg-input !important;
+    }
     color: $light;
   }
   @media (max-width: 470px) {
