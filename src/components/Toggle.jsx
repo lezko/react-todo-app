@@ -1,10 +1,13 @@
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
 
-const Toggle = ({active, setActive, icon, iconColor = 'white', beforeChange}) => {
+const Toggle = ({active, title, setActive, icon, iconColor = 'white', beforeChange}) => {
     return (
-        <div onClick={() => {
+        <div
+            title={title || (active ? 'disable' : 'enable')}
+            onClick={() => {
             if (typeof beforeChange === 'function') {
-                beforeChange().then(() => setActive(!active)).catch(() => {});
+                beforeChange().then(() => setActive(!active)).catch(() => {
+                });
             } else {
                 setActive(!active);
             }

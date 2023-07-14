@@ -125,7 +125,7 @@ const User = ({user, onUpdate}) => {
                     }
 
                     <div className="toggles">
-                        <Toggle icon={faStar} iconColor={'gold'} active={isAdmin} setActive={handleIsAdminChange} beforeChange={() => {
+                        <Toggle title={isAdmin ? 'unmake admin' : 'make admin'} icon={faStar} iconColor={'gold'} active={isAdmin} setActive={handleIsAdminChange} beforeChange={() => {
                             return new Promise((resolve, reject) => {
                                 if (!settings.confirmChangeRole) {
                                     resolve();
@@ -147,7 +147,7 @@ const User = ({user, onUpdate}) => {
                                 });
                             });
                         }} />
-                        <Toggle icon={faBan} iconColor={'red'} active={isBanned} setActive={handleIsBannedChange} beforeChange={() => {
+                        <Toggle title={isBanned ? 'unban' : 'ban'} icon={faBan} iconColor={'red'} active={isBanned} setActive={handleIsBannedChange} beforeChange={() => {
                             return new Promise((resolve, reject) => {
                                 if (!settings.confirmChangeBanned) {
                                     resolve();

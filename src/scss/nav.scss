@@ -36,15 +36,10 @@ nav {
   }
 
   .user-logout-btn {
-    max-width: 100%;
+    // todo star not aligns well on desktop
     cursor: pointer;
-
-    a.logout {
-      padding-inline: 0;
-      margin-left: 15px;
-    }
   }
-
+  
   .user-logout-btn .star {
     width: 10px;
     margin-left: 5px;
@@ -52,13 +47,27 @@ nav {
 
   .current-user {
     display: flex;
+    align-items: center;
     border-left: 3px solid $light;
-    padding-left: 10px;
     white-space: nowrap;
+    padding-right: 0;
     overflow-x: auto;
     max-width: max(100px, 20vw);
   }
-  .mobile-only-links {display: none}
+
+  hr {
+    margin-top: 5px;
+    height: 1px;
+    border-width: 0;
+    background-color: $light;
+    width: 100%;
+  }
+
+  .profile-icon {
+    margin-right: 10px;
+    width: 30px;
+    height: 30px;
+  }
 
   @media (max-width: 470px) {
     position: absolute;
@@ -89,6 +98,9 @@ nav {
         font-size: 1.2rem;
       }
     }
+    .buttons {
+      width: 100%;
+    }
     .current-user {
       border-left: none;
       padding-left: 0;
@@ -101,7 +113,6 @@ nav {
       align-items: center;
       font-size: 1.2rem;
     }
-    .mobile-only-links {display: block}
   }
 }
 

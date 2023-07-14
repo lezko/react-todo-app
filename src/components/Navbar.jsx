@@ -1,7 +1,7 @@
 import {useState} from 'react';
 import {getApiUrl, setApiUrl} from 'config';
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
-import {faBars, faRightFromBracket, faStar, faXmark} from '@fortawesome/free-solid-svg-icons';
+import {faBars, faRightFromBracket, faStar, faXmark, faCircleUser} from '@fortawesome/free-solid-svg-icons';
 import {useUserContext} from 'hooks/user';
 import {NavLink, useNavigate} from 'react-router-dom';
 import {ConfigProvider, Dropdown} from 'antd';
@@ -71,27 +71,31 @@ const Navbar = () => {
                     )}
 
                     {user ?
-                        <li style={{color: user.color}} className="user-logout-btn">
-                            <ConfigProvider theme={{
-                                token: {
-                                    borderRadius: 0,
-                                    colorBgBase: 'rgb(102, 21, 95)',
-                                    colorText: '7E8098FF',
-                                    controlItemBgHover: 'rgb(102, 21, 95)',
-                                }
-                            }}>
-                                <Dropdown overlayClassName="nav-dropdown"
-                                          menu={{items: menuItems}}
-                                          trigger={['click']}>
-                                    <a onClick={e => e.preventDefault()} style={{color: user.color}}
-                                       className="current-user">
-                                        {user.login}
-                                        {user.role === 'ROLE_ADMIN' &&
-                                            <FontAwesomeIcon className="star" icon={faStar} />}
-                                    </a>
-                                </Dropdown>
-                            </ConfigProvider>
-                        </li>
+                        <>
+                            <hr className="mobile-only" />
+                            <li className="user-logout-btn">
+                                <ConfigProvider theme={{
+                                    token: {
+                                        borderRadius: 0,
+                                        colorBgBase: 'rgb(102, 21, 95)',
+                                        colorText: '7E8098FF',
+                                        controlItemBgHover: 'rgb(102, 21, 95)',
+                                    }
+                                }}>
+                                    <Dropdown overlayClassName="nav-dropdown"
+                                              menu={{items: menuItems}}
+                                              trigger={['click']}>
+                                        <a onClick={e => e.preventDefault()}
+                                           className="current-user">
+                                            <FontAwesomeIcon className="mobile-only profile-icon" icon={faCircleUser} />
+                                            <span style={{color: user.color}}>{user.login}</span>
+                                            {user.role === 'ROLE_ADMIN' &&
+                                                <FontAwesomeIcon style={{color: user.color}} className="star" icon={faStar} />}
+                                        </a>
+                                    </Dropdown>
+                                </ConfigProvider>
+                            </li>
+                        </>
                         :
                         <>
                             <li>
@@ -103,7 +107,7 @@ const Navbar = () => {
                         </>
                     }
                     {user &&
-                        <ul className="mobile-only-links">{menuItems.map(item =>
+                        <ul className="mobile-only">{menuItems.map(item =>
                             <li key={item.key}>{item.label}</li>
                         )}</ul>
                     }
