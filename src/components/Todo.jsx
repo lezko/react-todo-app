@@ -8,6 +8,8 @@ import {UserContext} from 'hooks/user';
 import useModal from 'antd/es/modal/useModal';
 import {getSettingsFromLocalStorage} from 'utils/settingsStorage';
 import Toggle from 'components/Toggle';
+import Checkbox from 'components/Checkbox';
+import Spinner from 'components/Spinner';
 
 const Todo = ({todo}) => {
     const {todos, setTodos} = useContext(TodosContext);
@@ -15,7 +17,19 @@ const Todo = ({todo}) => {
     const [status, setStatus] = useState('default');
     const [hasDesc, setHasDesc] = useState(Boolean(todo.description));
     const [pending, setPending] = useState(false);
-    const [editData, setEditData] = useState({title: todo.title, description: todo.description});
+    const [editData, setEditData] = useState({
+        title: todo.title,
+        description: todo.description,
+        completed: todo.completed
+    });
+    const resetEditData = () => {
+        setEditData({
+            title: todo.title,
+            description: todo.description,
+            completed: todo.completed
+        });
+    };
+
     const [error, setError] = useState('');
     const inputRef = useRef();
 
@@ -62,7 +76,7 @@ const Todo = ({todo}) => {
         }));
     };
 
-    const confirmUpdate = () => {
+    const confirmUpdate = updatedData => {
         if (!editData.title) {
             setError('Title must not be empty');
             return;
@@ -71,11 +85,8 @@ const Todo = ({todo}) => {
             setError('Description must not be empty');
             return;
         }
+
         setError('');
-
-        const updatedData = {...editData, description: hasDesc ? editData.description : ''};
-        setEditData(updatedData);
-
         setPending(true);
         fetch(getApiUrl() + '/todos/' + todo.id, {
             method: 'put',
@@ -84,26 +95,30 @@ const Todo = ({todo}) => {
                 'ngrok-skip-browser-warning': '69420',
                 'authorization': getTokenFromLocalStorage()
             },
-            body: JSON.stringify(updatedData),
+            body: JSON.stringify({title: updatedData.title, description: updatedData.description, isCompleted: updatedData.completed}),
         })
             .then(res => {
                 if (res.ok) {
                     setError('');
                     updateCurrentTodo(updatedData);
+                    setEditData(updatedData);
                     setStatus('default');
                 } else if (res.status === 400) {
                     return res.json();
                 } else {
                     setError(`Request failed: ${res.status}`);
+                    resetEditData();
                 }
             })
             .then(data => {
                 if (data) {
                     setError(data.message);
+                    resetEditData();
                 }
             })
             .catch(e => {
                 setError(e.message);
+                resetEditData();
             })
             .finally(() => setPending(false));
     };
@@ -133,7 +148,6 @@ const Todo = ({todo}) => {
                 <div className="input-holder">
                     <input ref={inputRef} autoFocus value={editData.title} onChange={handleChange} type="text"
                            name="title" />
-                    {/*<FontAwesomeIcon onClick={() => inputRef.current.focus()} className="icon" icon={faEdit} />*/}
                 </div>
                 <div className="desc-toggle">
                     <span>Description</span>
@@ -167,7 +181,7 @@ const Todo = ({todo}) => {
                             });
                         }}><FontAwesomeIcon icon={faTrash} />
                         </button>
-                        <button disabled={pending} onClick={startUpdate}><FontAwesomeIcon icon={faEdit} /></button>
+                        {!editData.completed && <button disabled={pending} onClick={startUpdate}><FontAwesomeIcon icon={faEdit} /></button>}
                     </div>
                 );
             }
@@ -178,16 +192,32 @@ const Todo = ({todo}) => {
             <div className="todo__buttons">
                 <button disabled={pending} onClick={cancelUpdate}><FontAwesomeIcon icon={faXmark} /></button>
                 {(todo.title !== editData.title ||
-                    todo.description !== (hasDesc ? editData.description : '')) &&
-                    <button disabled={pending} onClick={confirmUpdate}><FontAwesomeIcon icon={faCheck} /></button>
+                        todo.description !== (hasDesc ? editData.description : '')) &&
+                    <button disabled={pending} onClick={() => {
+                        confirmUpdate({...editData, description: hasDesc ? editData.description : ''});
+                    }}><FontAwesomeIcon icon={faCheck} /></button>
                 }
             </div>
         );
     };
 
+    const handleChangeCompleted = nextCompleted => {
+        confirmUpdate({...editData, completed: nextCompleted});
+    };
     return (
-        <div className="todo">
+        <div className={'todo ' + (status === 'edit' ? 'edit' : '')}>
             {contextHolder}
+            {pending && <Spinner className="pending-spinner" />}
+
+            {status === 'default' &&
+                <Checkbox
+                    disabled={+user.id !== +todo.creator.id}
+                    title={editData.completed ? 'unmark completed' : 'mark completed'}
+                    className="todo__checkbox"
+                    checked={editData.completed}
+                    setChecked={handleChangeCompleted}
+                />
+            }
             {getTodoInfoHtml()}
             <div
                 className="todo__author"
@@ -195,8 +225,9 @@ const Todo = ({todo}) => {
             >
                 {todo.creator.login} {todo.creator.role === 'ROLE_ADMIN' && <FontAwesomeIcon icon={faStar} />}
             </div>
+
             {getButtonsHtml()}
-            <div style={{color: 'red'}}>{error}</div>
+            {error && <div style={{color: 'red'}}>{error}</div>}
         </div>
     );
 };

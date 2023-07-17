@@ -1,43 +1,70 @@
 .todo {
   display: grid;
   padding-block: 10px;
-  grid-template-columns: 1fr auto;
+  column-gap: 25px;
+  grid-template-columns: auto auto 1fr auto;
   row-gap: 5px;
   grid-template-areas:
-  "title title"
-  "desc desc"
-  "author buttons"
-    ;
+  "checkbox title title title"
+  "checkbox desc desc desc"
+  "checkbox author spinner buttons";
 
+  &.edit {
+    grid-template-columns: auto 1fr auto;
+    grid-template-areas:
+  "title title title"
+  "desc desc desc"
+  "author spinner buttons";
+  }
+  &__checkbox {
+    grid-area: checkbox;
+    place-self: center;
+  }
+  .pending-spinner {
+    grid-area: spinner;
+    place-self: center;
+    margin: 0;
+  }
   form {
     grid-area: title / desc;
   }
+
   &__title {
     grid-area: title;
     font-size: 1.2rem;
     font-weight: 700;
   }
+
   &__description {
     overflow-y: auto;
     grid-area: desc;
     font-size: .9rem;
   }
+
   &__buttons {
+    min-height: 30px;
     grid-area: buttons;
     display: flex;
+    align-items: center;
+
     & > * {
       width: 30px;
       height: 30px;
       display: grid;
       place-content: center;
     }
-    & > * + * {margin-left: 5px}
+
+    & > * + * {
+      margin-left: 5px
+    }
   }
+
   &__author {
     grid-area: author;
     align-self: end;
     font-size: .7rem;
   }
+
   .input-holder {
     display: flex;
 
@@ -48,6 +75,7 @@
       padding: 6px;
     }
   }
+
   input {
     padding: 5px 0;
     font-size: 1.3rem;
@@ -56,16 +84,21 @@
     background-color: inherit;
     border-bottom: 1px solid #3a3b4d;
   }
+
   textarea {
     resize: vertical;
     margin-top: 15px;
     border-color: $light;
   }
+
   .desc-toggle {
     display: flex;
     font-size: .9rem;
     align-items: center;
-    & > * + * {margin-left: 10px}
+
+    & > * + * {
+      margin-left: 10px
+    }
   }
 }
 
