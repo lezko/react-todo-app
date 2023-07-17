@@ -4,11 +4,14 @@
   grid-template-columns: 1fr auto;
   row-gap: 5px;
   grid-template-areas:
-  "title buttons"
+  "title title"
   "desc desc"
-  "author author"
+  "author buttons"
     ;
 
+  form {
+    grid-area: title / desc;
+  }
   &__title {
     grid-area: title;
     font-size: 1.2rem;
@@ -19,9 +22,50 @@
     grid-area: desc;
     font-size: .9rem;
   }
+  &__buttons {
+    grid-area: buttons;
+    display: flex;
+    & > * {
+      width: 30px;
+      height: 30px;
+      display: grid;
+      place-content: center;
+    }
+    & > * + * {margin-left: 5px}
+  }
   &__author {
     grid-area: author;
+    align-self: end;
     font-size: .7rem;
+  }
+  .input-holder {
+    display: flex;
+
+    .icon {
+      cursor: pointer;
+      border: 1px solid $light;
+      border-radius: 5px;
+      padding: 6px;
+    }
+  }
+  input {
+    padding: 5px 0;
+    font-size: 1.3rem;
+    margin-bottom: 20px;
+    grid-area: title;
+    background-color: inherit;
+    border-bottom: 1px solid #3a3b4d;
+  }
+  textarea {
+    resize: vertical;
+    margin-top: 15px;
+    border-color: $light;
+  }
+  .desc-toggle {
+    display: flex;
+    font-size: .9rem;
+    align-items: center;
+    & > * + * {margin-left: 10px}
   }
 }
 

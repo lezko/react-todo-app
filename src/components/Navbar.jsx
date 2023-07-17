@@ -49,7 +49,7 @@ const Navbar = () => {
             label: <a href="/logout" className="logout" onClick={e => {
                 e.preventDefault();
                 logout();
-            }}>logout <FontAwesomeIcon icon={faRightFromBracket} /></a>,
+            }}><span>logout</span><FontAwesomeIcon className="icon" icon={faRightFromBracket} /></a>,
             key: 2
         }
     ];

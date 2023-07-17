@@ -1,6 +1,6 @@
 import {useContext, useState} from 'react';
 import {getApiUrl} from 'config';
-import {TodosContext} from 'routes/todos';
+import {TodosContext} from 'pages/todos-page';
 import {getTokenFromLocalStorage} from 'utils/tokenStorage';
 
 const NewTodo = () => {

@@ -2,7 +2,7 @@ import {useUserContext} from 'hooks/user';
 import ResetPasswordForm from 'components/ResetPasswordForm';
 import ResetLoginForm from 'components/ResetLoginForm';
 
-const Profile = () => {
+const ProfilePage = () => {
     const {user, setUser} = useUserContext();
     return (
         // todo cancel one form if another form clicked
@@ -14,4 +14,4 @@ const Profile = () => {
     );
 };
 
-export default Profile;
+export default ProfilePage;

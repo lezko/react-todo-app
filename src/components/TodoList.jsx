@@ -1,6 +1,6 @@
 import Todo from 'components/Todo';
 import {useContext} from 'react';
-import {TodosContext} from 'routes/todos';
+import {TodosContext} from 'pages/todos-page';
 
 const TodoList = () => {
     const {todos} = useContext(TodosContext);

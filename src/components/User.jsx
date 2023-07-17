@@ -5,7 +5,6 @@ import {useUserContext} from 'hooks/user';
 import {getApiUrl} from 'config';
 import {getTokenFromLocalStorage} from 'utils/tokenStorage';
 import Toggle from 'components/Toggle';
-import {Modal} from 'antd';
 import useModal from 'antd/es/modal/useModal';
 import {getSettingsFromLocalStorage} from 'utils/settingsStorage';
 

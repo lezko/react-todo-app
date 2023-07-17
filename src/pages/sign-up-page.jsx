@@ -3,7 +3,7 @@ import {getApiUrl} from 'config';
 import {setTokenToLocalStorage} from 'utils/tokenStorage';
 import {UserContext} from 'hooks/user';
 
-const SignUp = () => {
+const SignUpPage = () => {
     const {setUser} = useContext(UserContext);
     const [pending, setPending] = useState(false);
     const [error, setError] = useState('');
@@ -76,4 +76,4 @@ const SignUp = () => {
     );
 };
 
-export default SignUp;
+export default SignUpPage;

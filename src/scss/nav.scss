@@ -24,8 +24,15 @@ nav {
     padding: 5px 15px;
 
   }
-  .home-link {padding-inline: 0}
-  .buttons {max-width: 100%}
+
+  .home-link {
+    padding-inline: 0
+  }
+
+  .buttons {
+    max-width: 100%
+  }
+
   a:hover {
     background-color: inherit;
     color: $bg-input;
@@ -39,10 +46,15 @@ nav {
     // todo star not aligns well on desktop
     cursor: pointer;
   }
-  
+
   .user-logout-btn .star {
     width: 10px;
     margin-left: 5px;
+  }
+
+  .logout {
+    display: flex;
+    align-items: center;
   }
 
   .current-user {
@@ -134,18 +146,29 @@ nav {
   ul {
     border-radius: 0;
   }
+
   a {
     //transition: .3s !important;
-    &.active {text-decoration: underline}
+    &.active {
+      text-decoration: underline
+    }
+
     font-weight: 700;
+
     &:hover {
       color: $bg-input !important;
     }
+
     color: $light;
   }
+
   @media (max-width: 470px) {
     .nav-dropdown {
       display: none;
     }
   }
+}
+
+nav .logout .icon, .nav-dropdown .logout .icon {
+  margin-left: 5px;
 }

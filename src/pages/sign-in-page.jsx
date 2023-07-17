@@ -3,7 +3,7 @@ import {getApiUrl} from 'config';
 import {setTokenToLocalStorage} from 'utils/tokenStorage';
 import {UserContext} from 'hooks/user';
 
-const SignIn = () => {
+const SignInPage = () => {
     const {setUser} = useContext(UserContext);
     const [pending, setPending] = useState(false);
     const [error, setError] = useState('');
@@ -47,7 +47,7 @@ const SignIn = () => {
             setError(e.message);
         }).finally(() => {
             setPending(false);
-        })
+        });
     };
 
     return (
@@ -63,4 +63,4 @@ const SignIn = () => {
     );
 };
 
-export default SignIn;
+export default SignInPage;

@@ -6,7 +6,7 @@ import {getTokenFromLocalStorage} from 'utils/tokenStorage';
 
 export const TodosContext = createContext(null);
 
-const Todos = () => {
+const TodosPage = () => {
     const [todos, setTodos] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
@@ -65,4 +65,4 @@ const Todos = () => {
     );
 };
 
-export default Todos;
+export default TodosPage;

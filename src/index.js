@@ -2,17 +2,17 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import 'scss/index.scss';
 import {createHashRouter, Navigate, RouterProvider} from 'react-router-dom';
-import Root from 'routes/root';
 import ErrorPage from 'error-page';
-import Home from 'routes/home';
-import Todos from 'routes/todos';
+import HomePage from 'pages/home-page';
+import TodosPage from 'pages/todos-page';
 import AuthOnlyLayout from 'security/auth-only-layout';
-import Users from 'routes/users';
+import UsersPage from 'pages/users-page';
 import NoAuthOnlyLayout from 'security/no-auth-only-layout';
-import SignUp from 'routes/sign-up';
-import SignIn from 'routes/sign-in';
-import Profile from 'routes/profile';
-import Settings from 'routes/settings';
+import SignUpPage from 'pages/sign-up-page';
+import SignInPage from 'pages/sign-in-page';
+import ProfilePage from 'pages/profile-page';
+import SettingsPage from 'pages/settings-page';
+import Root from 'pages/root';
 
 const router = createHashRouter([
     {
@@ -22,7 +22,7 @@ const router = createHashRouter([
         children: [
             {
                 path: 'home',
-                element: <Home />
+                element: <HomePage />
             },
             {
                 index: true,
@@ -33,11 +33,11 @@ const router = createHashRouter([
                 children: [
                     {
                         path: 'sign-up',
-                        element: <SignUp />
+                        element: <SignUpPage />
                     },
                     {
                         path: 'sign-in',
-                        element: <SignIn />
+                        element: <SignInPage />
                     }
                 ]
             },
@@ -46,19 +46,19 @@ const router = createHashRouter([
                 children: [
                     {
                         path: 'todos',
-                        element: <Todos />
+                        element: <TodosPage />
                     },
                     {
                         path: 'users',
-                        element: <Users />
+                        element: <UsersPage />
                     },
                     {
                         path: 'profile',
-                        element: <Profile />
+                        element: <ProfilePage />
                     },
                     {
                         path: 'settings',
-                        element: <Settings />
+                        element: <SettingsPage />
                     }
                 ]
             }

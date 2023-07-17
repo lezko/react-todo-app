@@ -1,7 +1,7 @@
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
 import {faStar} from '@fortawesome/free-solid-svg-icons';
 
-const Home = () => {
+const HomePage = () => {
     return (
         <div className="home">
             <div style={{textAlign: 'center'}}><i>The app is still under construction and may sometimes be unavailable or behave strangely.</i></div>
@@ -26,4 +26,4 @@ const Home = () => {
     );
 };
 
-export default Home;
+export default HomePage;
