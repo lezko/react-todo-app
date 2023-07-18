@@ -20,13 +20,13 @@ const Todo = ({todo}) => {
     const [editData, setEditData] = useState({
         title: todo.title,
         description: todo.description,
-        completed: todo.completed
+        isCompleted: todo.isCompleted
     });
     const resetEditData = () => {
         setEditData({
             title: todo.title,
             description: todo.description,
-            completed: todo.completed
+            isCompleted: todo.isCompleted
         });
     };
 
@@ -181,7 +181,7 @@ const Todo = ({todo}) => {
                             });
                         }}><FontAwesomeIcon icon={faTrash} />
                         </button>
-                        {!editData.completed && <button disabled={pending} onClick={startUpdate}><FontAwesomeIcon icon={faEdit} /></button>}
+                        {!editData.isCompleted && <button disabled={pending} onClick={startUpdate}><FontAwesomeIcon icon={faEdit} /></button>}
                     </div>
                 );
             }
@@ -202,7 +202,7 @@ const Todo = ({todo}) => {
     };
 
     const handleChangeCompleted = nextCompleted => {
-        confirmUpdate({...editData, completed: nextCompleted});
+        confirmUpdate({...editData, isCompleted: nextCompleted});
     };
     return (
         <div className={'todo ' + (status === 'edit' ? 'edit' : '')}>
@@ -212,9 +212,9 @@ const Todo = ({todo}) => {
             {status === 'default' &&
                 <Checkbox
                     disabled={+user.id !== +todo.creator.id}
-                    title={editData.completed ? 'unmark completed' : 'mark completed'}
+                    title={editData.isCompleted ? 'unmark completed' : 'mark completed'}
                     className="todo__checkbox"
-                    checked={editData.completed}
+                    checked={editData.isCompleted}
                     setChecked={handleChangeCompleted}
                 />
             }

@@ -11,7 +11,7 @@ import {getSettingsFromLocalStorage} from 'utils/settingsStorage';
 const User = ({user, onUpdate}) => {
     const [color, setColor] = useState(user.color);
     const [isAdmin, setIsAdmin] = useState(user.role === 'ROLE_ADMIN');
-    const [isBanned, setIsBanned] = useState(user.inBan);
+    const [isBanned, setIsBanned] = useState(user.isInBan);
 
     const [pending, setPending] = useState(false);
     const {user: loggedUser} = useUserContext();
@@ -45,7 +45,7 @@ const User = ({user, onUpdate}) => {
             if (res.ok) {
                 onUpdate({
                     ...user,
-                    inBan: nextIsBanned
+                    isInBan: nextIsBanned
                 });
                 return;
             }
