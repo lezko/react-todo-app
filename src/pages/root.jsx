@@ -1,58 +1,23 @@
 import {Outlet, useNavigate} from 'react-router-dom';
-import {UserContext, useUser} from 'hooks/user';
 import Navbar from 'components/Navbar';
-import {getApiUrl} from 'config';
-import {getTokenFromLocalStorage} from 'utils/tokenStorage';
-import {useEffect, useState} from 'react';
 import {ConfigProvider} from 'antd';
+import {Provider} from 'react-redux';
+import {store, useAppDispatch, useAppSelector} from 'store';
+import {useEffect} from 'react';
+import {verifyUser} from 'store/userActionCreators';
 
 const Root = () => {
-    const {user, setUser, initialPending, setInitialPending} = useUser();
-    const [loading, setLoading] = useState(true);
-    const navigate = useNavigate();
-
+    const dispatch = useAppDispatch();
+    const {loading, user} = useAppSelector(state => state.user);
     useEffect(() => {
-        let ignore = false;
-        let ok = true;
-        fetch(getApiUrl() + '/me', {
-            headers: {
-                'ngrok-skip-browser-warning': '69420',
-                'authorization': getTokenFromLocalStorage(),
-            },
-        })
-            .then(res => {
-                ok = res.ok;
-                return res.json();
-            })
-            .then(data => {
-                if (ignore) {
-                    return;
-                }
-                if (ok) {
-                    setUser(data);
-                    navigate('/todos');
-                } else {
-                    setUser(null);
-                }
-            })
-            .catch(e => {
-                if (!ignore) {
-                    setUser(null);
-                }
-            })
-            .finally(() => {
-                setLoading(false);
-                setInitialPending(false);
-            });
-
-        return () => {
-            ignore = true;
-        };
-    }, []);
-
+        if (loading && user) {
+            dispatch(verifyUser());
+        }
+    });
     return (
         <div className="app">
-            <ConfigProvider theme={{token: {
+            <ConfigProvider theme={{
+                token: {
                     colorBgBase: 'rgb(24, 24, 36)',
                     colorText: 'rgb(126, 128, 152)',
                     colorWarning: '#bbca5a',
@@ -60,11 +25,10 @@ const Root = () => {
                     colorBorder: 'rgb(126, 128, 152)',
                     colorPrimaryHover: 'rgb(159,162,210)',
                     colorPrimary: 'rgb(24, 24, 36)',
-                }}}>
-                <UserContext.Provider value={{user, setUser, initialPending, setInitialPending}}>
-                    <Navbar />
-                    <Outlet />
-                </UserContext.Provider>
+                }
+            }}>
+                <Navbar />
+                <Outlet />
             </ConfigProvider>
         </div>
     );

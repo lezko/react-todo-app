@@ -1,3 +1,20 @@
+import axios from 'axios';
+import {store} from 'store';
+
+axios.interceptors.request.use(config => {
+    const state = store.getState();
+    const token = store.getState().user.user?.token || null;
+    config.headers['Authorization'] = token;
+    config.headers['ngrok-skip-browser-warning'] = '69420';
+    config.headers['Content-Type'] = 'application/json';
+    // todo get token from redux
+    // todo ssl workaround
+    // config.httpAgent = new https.Agent({
+    //     rejectUnauthorized: false
+    // })
+    return config;
+});
+
 if (!getApiUrl()) {
     setApiUrl('https://82.148.16.142:8080');
 }

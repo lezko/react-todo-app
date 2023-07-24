@@ -1,20 +1,21 @@
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
 import {faBan, faCheck, faEyedropper, faStar, faXmark} from '@fortawesome/free-solid-svg-icons';
 import {useRef, useState} from 'react';
-import {useUserContext} from 'hooks/user';
 import {getApiUrl} from 'config';
 import {getTokenFromLocalStorage} from 'utils/tokenStorage';
 import Toggle from 'components/Toggle';
 import useModal from 'antd/es/modal/useModal';
 import {getSettingsFromLocalStorage} from 'utils/settingsStorage';
+import {useAppSelector} from 'store';
 
 const User = ({user, onUpdate}) => {
+    const {user: loggedUser} = useAppSelector(state => state.user);
+
     const [color, setColor] = useState(user.color);
     const [isAdmin, setIsAdmin] = useState(user.role === 'ROLE_ADMIN');
     const [isBanned, setIsBanned] = useState(user.isInBan);
 
     const [pending, setPending] = useState(false);
-    const {user: loggedUser} = useUserContext();
     const colorInputRef = useRef();
 
     const resetData = () => {

@@ -1,9 +1,7 @@
-import {useUserContext} from 'hooks/user';
 import ResetPasswordForm from 'components/ResetPasswordForm';
 import ResetLoginForm from 'components/ResetLoginForm';
 
 const ProfilePage = () => {
-    const {user, setUser} = useUserContext();
     return (
         // todo cancel one form if another form clicked
         <div className="profile-page container">

@@ -1,10 +1,10 @@
-import {useUserContext} from 'hooks/user';
 import ProtectedLayout from 'security/protected-layout';
 import Spinner from 'components/Spinner';
+import {useAppSelector} from 'store';
 
 const AuthOnlyLayout = () => {
-    const {user, initialPending} = useUserContext();
-    return initialPending ? <Spinner /> : <ProtectedLayout isAllowed={user} redirectPath={'/home'} />;
+    const {user, loading} = useAppSelector(state => state.user);
+    return loading ? <Spinner /> : <ProtectedLayout isAllowed={user} redirectPath={'/home'} />;
 };
 
 export default AuthOnlyLayout;

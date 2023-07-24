@@ -2,36 +2,22 @@ import TodoList from 'components/TodoList';
 import {createContext, useEffect, useState} from 'react';
 import {getApiUrl} from 'config';
 import NewTodo from 'components/NewTodo';
-import {getTokenFromLocalStorage} from 'utils/tokenStorage';
+import axios from 'axios';
+import {ITodo} from 'models/ITodo';
 
-export const TodosContext = createContext(null);
+export type TodosContextType = { todos: ITodo[], setTodos: (todos: ITodo[]) => void };
+export const TodosContext = createContext<TodosContextType | null>(null);
 
 const TodosPage = () => {
-    const [todos, setTodos] = useState([]);
+    const [todos, setTodos] = useState<ITodo[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
     useEffect(() => {
         let ignore = false;
-        let ok = true;
-        fetch(getApiUrl() + '/todos', {
-            headers: {
-                'ngrok-skip-browser-warning': '69420',
-                'authorization': getTokenFromLocalStorage(),
-            }
-        })
+        axios.get(getApiUrl() + '/todos')
             .then(res => {
-                ok = res.ok;
-                return res.json();
-            })
-            .then(data => {
-                if (ignore) {
-                    return;
-                }
-                if (ok) {
-                    setTodos(data);
-                    setError('');
-                } else {
-                    setError(data.message);
+                if (!ignore) {
+                    setTodos(res.data);
                 }
             })
             .catch(e => {
@@ -39,11 +25,7 @@ const TodosPage = () => {
                     setError(e.message);
                 }
             })
-            .finally(() => {
-                if (!ignore) {
-                    setLoading(false);
-                }
-            });
+            .finally(() => setLoading(false));
 
         return () => {
             ignore = true;

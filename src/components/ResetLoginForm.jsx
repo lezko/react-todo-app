@@ -1,13 +1,13 @@
-import {useUserContext} from 'hooks/user';
 import {useState} from 'react';
 import Spinner from 'components/Spinner';
 import {getApiUrl} from 'config';
 import {getTokenFromLocalStorage, setTokenToLocalStorage} from 'utils/tokenStorage';
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
-import {faEdit, faCheck, faXmark} from '@fortawesome/free-solid-svg-icons';
+import {faCheck, faEdit, faXmark} from '@fortawesome/free-solid-svg-icons';
+import {useAppSelector} from 'store';
 
 const ResetLoginForm = () => {
-    const {user, setUser} = useUserContext();
+    const {user} = useAppSelector(state => state.user);
     const [status, setStatus] = useState('default'); // default, edit, pending
     const [error, setError] = useState('');
     const [login, setLogin] = useState(user.login);
@@ -29,7 +29,8 @@ const ResetLoginForm = () => {
             return res.json();
         }).then(data => {
             if (ok) {
-                setUser({...user, login});
+                // todo setUser
+                // setUser({...user, login});
                 setError('');
                 setTokenToLocalStorage(data['jwt-token']);
             } else {

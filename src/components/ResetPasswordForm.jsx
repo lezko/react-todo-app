@@ -1,8 +1,8 @@
 import {useState} from 'react';
 import Spinner from 'components/Spinner';
 import {getApiUrl} from 'config';
-import {useUserContext} from 'hooks/user';
 import {getTokenFromLocalStorage, setTokenToLocalStorage} from 'utils/tokenStorage';
+import {useAppSelector} from 'store';
 
 const initialData = {
     oldPassword: '',
@@ -11,7 +11,8 @@ const initialData = {
 };
 
 const ResetPasswordForm = () => {
-    const {user, setUser} = useUserContext();
+    const {user} = useAppSelector(state => state.user);
+
     const [status, setStatus] = useState('default'); // default, typingOldPassword, typingNewPassword
     const [pending, setPending] = useState(false);
     const [error, setError] = useState('');

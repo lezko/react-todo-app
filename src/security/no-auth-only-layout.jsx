@@ -1,8 +1,8 @@
-import {useUserContext} from 'hooks/user';
 import ProtectedLayout from 'security/protected-layout';
+import {useAppSelector} from 'store';
 
 const NoAuthOnlyLayout = () => {
-    const {user} = useUserContext();
+    const {user} = useAppSelector(state => state.user);
     return <ProtectedLayout isAllowed={!user} redirectPath="/todos" />
 };
 

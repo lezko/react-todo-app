@@ -1,8 +1,8 @@
 import User from 'components/User';
-import {useUserContext} from 'hooks/user';
+import {useAppSelector} from 'store';
 
 const UserList = ({users, setUsers}) => {
-    const {user: loggedUser, setUser} = useUserContext();
+    const {user: loggedUser} = useAppSelector(state => state.user);
     const handleUpdate = user => {
         setUsers(users.map(u => {
             if (u.id === user.id) {
@@ -11,7 +11,7 @@ const UserList = ({users, setUsers}) => {
             return u;
         }));
         if (user.id === loggedUser.id) {
-            setUser(user);
+            // setUser(user);
         }
     };
     return (

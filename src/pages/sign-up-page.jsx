@@ -1,10 +1,8 @@
-import {useContext, useState} from 'react';
+import {useState} from 'react';
 import {getApiUrl} from 'config';
 import {setTokenToLocalStorage} from 'utils/tokenStorage';
-import {UserContext} from 'hooks/user';
 
 const SignUpPage = () => {
-    const {setUser} = useContext(UserContext);
     const [pending, setPending] = useState(false);
     const [error, setError] = useState('');
     const [data, setData] = useState({
@@ -21,43 +19,43 @@ const SignUpPage = () => {
     };
 
     const handleSubmit = e => {
-        e.preventDefault();
-        if (data.password !== data.confirmPassword) {
-            setError('Passwords do not match');
-            return;
-        } else {
-            setError('');
-        }
-        setPending(true);
-        let ok = true;
-        fetch(getApiUrl() + '/register', {
-            method: 'post',
-            headers: {
-                'Content-Type': 'application/json',
-                'ngrok-skip-browser-warning': '69420',
-            },
-            body: JSON.stringify({
-                name: 'dummy name',
-                login: data.login,
-                password: data.password
-            }),
-        }).then(res => {
-            ok = res.ok;
-            return res.json();
-        }).then(data => {
-            if (ok) {
-                setTokenToLocalStorage(data['jwt-token']);
-                setUser(data);
-                setError('');
-            } else {
-                setError(data.message);
-            }
-        }).catch(e => {
-            setUser(null);
-            setError(e.message);
-        }).finally(() => {
-            setPending(false);
-        })
+        // e.preventDefault();
+        // if (data.password !== data.confirmPassword) {
+        //     setError('Passwords do not match');
+        //     return;
+        // } else {
+        //     setError('');
+        // }
+        // setPending(true);
+        // let ok = true;
+        // fetch(getApiUrl() + '/register', {
+        //     method: 'post',
+        //     headers: {
+        //         'Content-Type': 'application/json',
+        //         'ngrok-skip-browser-warning': '69420',
+        //     },
+        //     body: JSON.stringify({
+        //         name: 'dummy name',
+        //         login: data.login,
+        //         password: data.password
+        //     }),
+        // }).then(res => {
+        //     ok = res.ok;
+        //     return res.json();
+        // }).then(data => {
+        //     if (ok) {
+        //         setTokenToLocalStorage(data['jwt-token']);
+        //         setUser(data);
+        //         setError('');
+        //     } else {
+        //         setError(data.message);
+        //     }
+        // }).catch(e => {
+        //     setUser(null);
+        //     setError(e.message);
+        // }).finally(() => {
+        //     setPending(false);
+        // })
     };
 
     return (

@@ -50,7 +50,7 @@ const UsersPage = () => {
     }, []);
 
     if (loading) {
-        return 'loading users...';
+        return <>loading users...</>;
     }
 
     if (error) {
