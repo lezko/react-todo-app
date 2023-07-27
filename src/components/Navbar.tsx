@@ -1,5 +1,4 @@
-import {SyntheticEvent, useState} from 'react';
-import {getApiUrl, setApiUrl} from 'config';
+import {useState} from 'react';
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
 import {faBars, faCircleUser, faRightFromBracket, faStar, faXmark} from '@fortawesome/free-solid-svg-icons';
 import {NavLink, useNavigate} from 'react-router-dom';
@@ -23,14 +22,6 @@ const Navbar = () => {
         dispatch(logOut());
         setMenuOpened(false);
         navigate('/sign-in');
-    };
-
-    // debug only
-    const [input, setInput] = useState(getApiUrl || '');
-    const handleClick = (e: SyntheticEvent) => {
-        e.preventDefault();
-        setApiUrl(input);
-        setInput(getApiUrl());
     };
 
     const [menuOpened, setMenuOpened] = useState(false);

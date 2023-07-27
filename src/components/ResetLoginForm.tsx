@@ -7,6 +7,7 @@ import axios from 'axios';
 import {useLoggedInUser} from 'hooks/user';
 import {useAppDispatch} from 'store';
 import {logInSuccess} from 'store/userSlice';
+import {ApiUrl} from 'api-url';
 
 const ResetLoginForm = () => {
     const dispatch = useAppDispatch();
@@ -18,7 +19,7 @@ const ResetLoginForm = () => {
     const handleSave = () => {
         setError('');
         setStatus('pending');
-        axios.put(getApiUrl() + '/user/' + user.id, JSON.stringify({login}))
+        axios.put(ApiUrl.resetLogin(user.id), JSON.stringify({login}))
             .then(res => {
                 // todo make server respond with token, not jwt-token
                 const userData = Object.assign({}, res.data);

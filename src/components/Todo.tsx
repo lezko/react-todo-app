@@ -1,5 +1,4 @@
 import {createRef, FC, RefObject, useContext, useState} from 'react';
-import {getApiUrl} from 'config';
 import {TodosContext, TodosContextType} from 'pages/todos-page';
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
 import {faCheck, faEdit, faStar, faTrash, faXmark} from '@fortawesome/free-solid-svg-icons';
@@ -11,6 +10,7 @@ import {useAppSelector} from 'store';
 import {ITodo} from 'models/ITodo';
 import axios from 'axios';
 import {useSettings} from 'hooks/settings';
+import {ApiUrl} from 'api-url';
 
 interface TodoProps {
     todo: ITodo;
@@ -45,7 +45,7 @@ const Todo: FC<TodoProps> = ({todo}) => {
 
     const deleteTodo = () => {
         setPending(true);
-        axios.delete(getApiUrl() + '/todos/' + todo.id)
+        axios.delete(ApiUrl.deleteTodo(todo.id))
             .then(() => {
                 setTodos(todos.filter(t => t.id !== todo.id));
                 setError('');
@@ -88,7 +88,7 @@ const Todo: FC<TodoProps> = ({todo}) => {
 
         setError('');
         setPending(true);
-        axios.put(getApiUrl() + '/todos/' + todo.id, JSON.stringify({
+        axios.put(ApiUrl.updateTodo(todo.id), JSON.stringify({
             title: updatedData.title,
             description: updatedData.description,
             isCompleted: updatedData.isCompleted

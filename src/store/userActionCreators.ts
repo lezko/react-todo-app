@@ -1,14 +1,14 @@
-import {AppDispatch, RootState} from 'store/index';
+import {AppDispatch} from 'store/index';
 import {logInError, logInSuccess, startLogIn} from 'store/userSlice';
-import {getApiUrl} from 'config';
 import axios from 'axios';
+import {ApiUrl} from 'api-url';
 
 // todo proper exception handling
 export function logIn(login: string, password: string) {
     return async function (dispatch: AppDispatch) {
         try {
             dispatch(startLogIn());
-            const response = await axios.post(getApiUrl() + '/login', JSON.stringify({login, password}));
+            const response = await axios.post(ApiUrl.login(), JSON.stringify({login, password}));
             // todo server rename jwt-token to token
             const userData = Object.assign({}, response.data);
             userData.token = response.data['jwt-token'];
@@ -25,9 +25,9 @@ export function logIn(login: string, password: string) {
 }
 
 export function verifyUser() {
-    return async function (dispatch: AppDispatch, getState: () => RootState) {
+    return async function (dispatch: AppDispatch) {
         try {
-            const response = await axios.get(getApiUrl() + '/me');
+            const response = await axios.get(ApiUrl.me);
             dispatch(logInSuccess(response.data));
         } catch (e: unknown) {
             console.error(e);

@@ -1,9 +1,9 @@
 import UserList from 'components/UserList';
 import {useEffect, useState} from 'react';
-import {getApiUrl} from 'config';
 import {IUser} from 'models/IUser';
 import axios from 'axios';
 import Spinner from 'components/Spinner';
+import {ApiUrl} from 'api-url';
 
 const UsersPage = () => {
     const [users, setUsers] = useState<IUser[]>([]);
@@ -11,7 +11,7 @@ const UsersPage = () => {
     const [error, setError] = useState('');
     useEffect(() => {
         let ignore = false;
-        axios.get(getApiUrl() + '/users')
+        axios.get(ApiUrl.getUsers())
             .then(res => {
                 if (!ignore) {
                     setUsers(res.data);

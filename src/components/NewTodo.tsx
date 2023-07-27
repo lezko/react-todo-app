@@ -1,8 +1,8 @@
 import {ChangeEvent, FormEvent, useContext, useState} from 'react';
-import {getApiUrl} from 'config';
 import {TodosContext, TodosContextType} from 'pages/todos-page';
 import axios from 'axios';
 import Spinner from 'components/Spinner';
+import {ApiUrl} from 'api-url';
 
 const NewTodo = () => {
     const {todos, setTodos} = useContext(TodosContext) as TodosContextType;
@@ -21,7 +21,7 @@ const NewTodo = () => {
     const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         setPending(true);
-        axios.post(getApiUrl() + '/todos', JSON.stringify(data))
+        axios.post(ApiUrl.createTodo(), JSON.stringify(data))
             .then(res => {
                 setTodos([...todos, res.data]);
                 setError('');

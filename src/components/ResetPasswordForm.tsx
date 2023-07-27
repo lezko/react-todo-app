@@ -3,6 +3,7 @@ import Spinner from 'components/Spinner';
 import {getApiUrl} from 'config';
 import {useLoggedInUser} from 'hooks/user';
 import axios from 'axios';
+import {ApiUrl} from 'api-url';
 
 const initialData = {
     oldPassword: '',
@@ -35,7 +36,7 @@ const ResetPasswordForm = () => {
         setError('');
         e.preventDefault();
         setPending(true);
-        axios.post(getApiUrl() + '/login', JSON.stringify({login: user.login, password: data.oldPassword}))
+        axios.post(ApiUrl.login(), JSON.stringify({login: user.login, password: data.oldPassword}))
             .then(() => {
                 // todo maybe save new token
                 setError('');
@@ -68,7 +69,7 @@ const ResetPasswordForm = () => {
         }
 
         setPending(true);
-        axios.put(getApiUrl() + '/user/' + user.id, JSON.stringify({password: data.newPassword}))
+        axios.put(ApiUrl.resetPassword(user.id), JSON.stringify({password: data.newPassword}))
             .then(() => {
                 setError('');
                 setStatus('default');

@@ -24,7 +24,7 @@ export function getApiUrl() {
     return null;
 }
 
-export function setApiUrl(url) {
+export function setApiUrl(url: string) {
     if (url.endsWith('/')) {
         url = url.substring(0, url.length - 1);
     }

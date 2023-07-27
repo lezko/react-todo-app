@@ -1,13 +1,13 @@
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
 import {faBan, faCheck, faEyedropper, faStar, faXmark} from '@fortawesome/free-solid-svg-icons';
 import {ChangeEvent, createRef, FC, useState} from 'react';
-import {getApiUrl} from 'config';
 import Toggle from 'components/Toggle';
 import useModal from 'antd/es/modal/useModal';
 import {IUser, UserRole} from 'models/IUser';
 import axios from 'axios';
 import {useLoggedInUser} from 'hooks/user';
 import {useSettings} from 'hooks/settings';
+import {ApiUrl} from 'api-url';
 
 interface UserProps {
     user: IUser;
@@ -42,7 +42,7 @@ const User: FC<UserProps> = ({user, onUpdate}) => {
     const handleIsBannedChange = (nextIsBanned: boolean) => {
         setIsBanned(nextIsBanned);
         // todo make server handle ban requests as regular update
-        axios.put(getApiUrl() + '/ban/' + user.id)
+        axios.put(ApiUrl.banUser(user.id))
             .then(() => {
                 onUpdate({...user, isInBan: nextIsBanned});
             })
@@ -50,7 +50,7 @@ const User: FC<UserProps> = ({user, onUpdate}) => {
                 resetData();
                 // todo show error in modal
                 if (axios.isAxiosError(e)) {
-                    console.error(e.response?.data.message);
+                    console.error(e.response?.data.message || e.message);
                 } else {
                     console.error(e.message);
                 }
@@ -60,7 +60,7 @@ const User: FC<UserProps> = ({user, onUpdate}) => {
 
     const confirmUpdate = (updatedData: any) => {
         setPending(true);
-        axios.put(getApiUrl() + '/user/' + user.id, JSON.stringify(updatedData))
+        axios.put(ApiUrl.updateUser(user.id), JSON.stringify(updatedData))
             .then(() => {
                 onUpdate({
                     ...user,

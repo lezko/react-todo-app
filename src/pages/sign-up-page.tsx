@@ -1,8 +1,8 @@
 import {ChangeEvent, FormEvent, useState} from 'react';
-import {getApiUrl} from 'config';
 import axios from 'axios';
 import {useAppDispatch} from 'store';
 import {logInError, logInSuccess} from 'store/userSlice';
+import {ApiUrl} from 'api-url';
 
 const SignUpPage = () => {
     const dispatch = useAppDispatch();
@@ -30,7 +30,7 @@ const SignUpPage = () => {
             setError('');
         }
         setPending(true);
-        axios.post(getApiUrl() + '/register', JSON.stringify({
+        axios.post(ApiUrl.register(), JSON.stringify({
             name: 'dummy name',
             login: data.login,
             password: data.password

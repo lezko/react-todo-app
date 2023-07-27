@@ -1,10 +1,10 @@
 import TodoList from 'components/TodoList';
 import {createContext, useEffect, useState} from 'react';
-import {getApiUrl} from 'config';
 import NewTodo from 'components/NewTodo';
 import axios from 'axios';
 import {ITodo} from 'models/ITodo';
 import Spinner from 'components/Spinner';
+import {ApiUrl} from 'api-url';
 
 export type TodosContextType = { todos: ITodo[], setTodos: (todos: ITodo[]) => void };
 export const TodosContext = createContext<TodosContextType | null>(null);
@@ -15,7 +15,7 @@ const TodosPage = () => {
     const [error, setError] = useState('');
     useEffect(() => {
         let ignore = false;
-        axios.get(getApiUrl() + '/todos')
+        axios.get(ApiUrl.getTodos())
             .then(res => {
                 if (!ignore) {
                     setTodos(res.data);
