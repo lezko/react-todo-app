@@ -4,6 +4,7 @@ import {getApiUrl} from 'config';
 import NewTodo from 'components/NewTodo';
 import axios from 'axios';
 import {ITodo} from 'models/ITodo';
+import Spinner from 'components/Spinner';
 
 export type TodosContextType = { todos: ITodo[], setTodos: (todos: ITodo[]) => void };
 export const TodosContext = createContext<TodosContextType | null>(null);
@@ -35,7 +36,7 @@ const TodosPage = () => {
     return (
         <div className="main">
             {loading ?
-                'loading...' :
+                <div style={{textAlign: 'center'}}>loading todos <Spinner /></div> :
                 error
                     ? <div style={{color: 'red'}}>{error}</div> :
                     <TodosContext.Provider value={{todos, setTodos}}>

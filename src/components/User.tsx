@@ -4,10 +4,10 @@ import {ChangeEvent, createRef, FC, useState} from 'react';
 import {getApiUrl} from 'config';
 import Toggle from 'components/Toggle';
 import useModal from 'antd/es/modal/useModal';
-import {getSettingsFromLocalStorage} from 'utils/settingsStorage';
 import {IUser, UserRole} from 'models/IUser';
 import axios from 'axios';
 import {useLoggedInUser} from 'hooks/user';
+import {useSettings} from 'hooks/settings';
 
 interface UserProps {
     user: IUser;
@@ -76,7 +76,7 @@ const User: FC<UserProps> = ({user, onUpdate}) => {
     };
 
     const [{confirm}, contextHolder] = useModal();
-    const settings = getSettingsFromLocalStorage();
+    const settings = useSettings();
 
     return (
         <div className="user">

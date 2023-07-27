@@ -1,9 +1,13 @@
 import Toggle from 'components/Toggle';
 import {useState} from 'react';
-import {getSettingsFromLocalStorage, partiallySaveSettingsToLocalStorage} from 'utils/settingsStorage';
+import {useSettings} from 'hooks/settings';
+import {useAppDispatch} from 'store';
+import {setSettings} from 'store/settingsSlice';
 
 const SettingsPage = () => {
-    const settings = getSettingsFromLocalStorage();
+    const dispatch = useAppDispatch();
+    const settings = useSettings();
+    console.log(settings);
     const [roleActive, setRoleActive] = useState(settings.confirmChangeRole);
     const [banActive, setBanActive] = useState(settings.confirmChangeBanned);
     const [deleteActive, setDeleteActive] = useState(settings.confirmDeleteTodo);
@@ -11,19 +15,22 @@ const SettingsPage = () => {
     const handeChangeRole = () => {
         const nextRoleActive = !roleActive;
         setRoleActive(nextRoleActive);
-        partiallySaveSettingsToLocalStorage({confirmChangeRole: nextRoleActive});
+        dispatch(setSettings({...settings, confirmChangeRole: nextRoleActive}));
+        // partiallySaveSettingsToLocalStorage({confirmChangeRole: nextRoleActive});
     }
 
     const handleChangeBan = () => {
         const nextBanActive = !banActive;
         setBanActive(nextBanActive);
-        partiallySaveSettingsToLocalStorage({confirmChangeBanned: nextBanActive});
+        dispatch(setSettings({...settings, confirmChangeBanned: nextBanActive}));
+        // partiallySaveSettingsToLocalStorage({confirmChangeBanned: nextBanActive});
     }
 
     const handleChangeDelete = () => {
         const nextDelete = !deleteActive;
         setDeleteActive(nextDelete);
-        partiallySaveSettingsToLocalStorage({confirmDeleteTodo: nextDelete});
+        dispatch(setSettings({...settings, confirmDeleteTodo: nextDelete}));
+        // partiallySaveSettingsToLocalStorage({confirmDeleteTodo: nextDelete});
     }
 
     return (

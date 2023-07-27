@@ -4,13 +4,13 @@ import {TodosContext, TodosContextType} from 'pages/todos-page';
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
 import {faCheck, faEdit, faStar, faTrash, faXmark} from '@fortawesome/free-solid-svg-icons';
 import useModal from 'antd/es/modal/useModal';
-import {getSettingsFromLocalStorage} from 'utils/settingsStorage';
 import Toggle from 'components/Toggle';
 import Checkbox from 'components/Checkbox';
 import Spinner from 'components/Spinner';
 import {useAppSelector} from 'store';
 import {ITodo} from 'models/ITodo';
 import axios from 'axios';
+import {useSettings} from 'hooks/settings';
 
 interface TodoProps {
     todo: ITodo;
@@ -40,7 +40,8 @@ const Todo: FC<TodoProps> = ({todo}) => {
     const inputRef: RefObject<HTMLInputElement> = createRef();
 
     const [{confirm}, contextHolder] = useModal();
-    const settings = getSettingsFromLocalStorage();
+    const settings = useSettings();
+    console.log(settings);
 
     const deleteTodo = () => {
         setPending(true);
@@ -90,7 +91,7 @@ const Todo: FC<TodoProps> = ({todo}) => {
         axios.put(getApiUrl() + '/todos/' + todo.id, JSON.stringify({
             title: updatedData.title,
             description: updatedData.description,
-            isCompleted: updatedData.completed
+            isCompleted: updatedData.isCompleted
         }))
             .then(() => {
                 setError('');

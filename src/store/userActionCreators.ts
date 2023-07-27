@@ -2,7 +2,7 @@ import {AppDispatch, RootState} from 'store/index';
 import {logInError, logInSuccess, startLogIn} from 'store/userSlice';
 import {getApiUrl} from 'config';
 import axios from 'axios';
-import {UserRole} from 'models/IUser';
+
 // todo proper exception handling
 export function logIn(login: string, password: string) {
     return async function (dispatch: AppDispatch) {
@@ -16,7 +16,7 @@ export function logIn(login: string, password: string) {
             dispatch(logInSuccess(userData));
         } catch (e: unknown) {
             if (axios.isAxiosError(e)) {
-                dispatch(logInError(e.response?.data.message));
+                dispatch(logInError(e.response?.data.message || 'Server is not responding'));
             } else {
                 dispatch(logInError(String(e)));
             }
@@ -27,8 +27,6 @@ export function logIn(login: string, password: string) {
 export function verifyUser() {
     return async function (dispatch: AppDispatch, getState: () => RootState) {
         try {
-            const token = getState().user.user?.token || '';
-            // const response = await axios.get(getApiUrl() + '/me', {headers: {'Authorization': token}});
             const response = await axios.get(getApiUrl() + '/me');
             dispatch(logInSuccess(response.data));
         } catch (e: unknown) {

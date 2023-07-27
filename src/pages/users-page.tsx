@@ -3,6 +3,7 @@ import {useEffect, useState} from 'react';
 import {getApiUrl} from 'config';
 import {IUser} from 'models/IUser';
 import axios from 'axios';
+import Spinner from 'components/Spinner';
 
 const UsersPage = () => {
     const [users, setUsers] = useState<IUser[]>([]);
@@ -35,7 +36,7 @@ const UsersPage = () => {
     }, []);
 
     if (loading) {
-        return <>loading users...</>;
+        return <div style={{textAlign: 'center'}}>loading users <Spinner /></div>;
     }
 
     if (error) {

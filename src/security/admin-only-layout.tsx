@@ -1,8 +1,8 @@
-import {useUserContext} from 'hooks/user';
 import ProtectedLayout from 'security/protected-layout';
+import {useLoggedInUser} from 'hooks/user';
 
 const AdminOnlyLayout = () => {
-    const {user} = useUserContext();
+    const {user} = useLoggedInUser();
     return <ProtectedLayout isAllowed={user.role === 'ROLE_ADMIN'} redirectPath="/home" />
 };
 

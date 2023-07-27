@@ -12,7 +12,6 @@ import ProfilePage from 'pages/profile-page';
 import SettingsPage from 'pages/settings-page';
 import Root from 'pages/root';
 import {createRoot} from 'react-dom/client';
-import {StrictMode} from 'react';
 import {Provider} from 'react-redux';
 import {store} from 'store';
 

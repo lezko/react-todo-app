@@ -21,6 +21,7 @@ function saveUserToLocalStorage(user: IUser) {
 function getUserFromLocalStorage(): UserState {
     const userString = localStorage.getItem('user');
     if (userString) {
+        // todo user may edit localstorage manually and some fields will be missing
         const user: IAuthUser = JSON.parse(userString);
         return {
             user,
