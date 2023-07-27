@@ -1,4 +1,14 @@
-const Checkbox = ({checked, setChecked, disabled = false, className = '', title}) => {
+import {FC} from 'react';
+
+interface CheckboxProps {
+    checked: boolean;
+    setChecked: (checked: boolean) => void;
+    disabled?: boolean;
+    className?: string;
+    title?: string;
+}
+
+const Checkbox: FC<CheckboxProps> = ({checked, setChecked, disabled = false, className = '', title}) => {
     const classList = ['checkbox'];
     if (classList) {
         classList.push(className);

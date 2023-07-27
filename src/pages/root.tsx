@@ -1,14 +1,14 @@
-import {Outlet, useNavigate} from 'react-router-dom';
+import {Outlet} from 'react-router-dom';
 import Navbar from 'components/Navbar';
 import {ConfigProvider} from 'antd';
-import {Provider} from 'react-redux';
-import {store, useAppDispatch, useAppSelector} from 'store';
+import {useAppDispatch} from 'store';
 import {useEffect} from 'react';
 import {verifyUser} from 'store/userActionCreators';
+import {useUser} from 'hooks/user';
 
 const Root = () => {
     const dispatch = useAppDispatch();
-    const {loading, user} = useAppSelector(state => state.user);
+    const {loading, user} = useUser();
     useEffect(() => {
         if (loading && user) {
             dispatch(verifyUser());

@@ -1,56 +1,49 @@
-import {useState} from 'react';
+import {SyntheticEvent, useState} from 'react';
 import Spinner from 'components/Spinner';
 import {getApiUrl} from 'config';
-import {getTokenFromLocalStorage, setTokenToLocalStorage} from 'utils/tokenStorage';
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
 import {faCheck, faEdit, faXmark} from '@fortawesome/free-solid-svg-icons';
-import {useAppSelector} from 'store';
+import axios from 'axios';
+import {useLoggedInUser} from 'hooks/user';
+import {useAppDispatch} from 'store';
+import {logInSuccess} from 'store/userSlice';
 
 const ResetLoginForm = () => {
-    const {user} = useAppSelector(state => state.user);
-    const [status, setStatus] = useState('default'); // default, edit, pending
+    const dispatch = useAppDispatch();
+    const {user} = useLoggedInUser();
+    const [status, setStatus] = useState<'default' | 'edit' | 'pending'>('default');
     const [error, setError] = useState('');
     const [login, setLogin] = useState(user.login);
 
-    const handleSave = e => {
+    const handleSave = () => {
         setError('');
         setStatus('pending');
-        let ok;
-        fetch(getApiUrl() + '/user/' + user.id, {
-            method: 'put',
-            headers: {
-                'content-type': 'application/json',
-                'ngrok-skip-browser-warning': '69420',
-                'authorization': getTokenFromLocalStorage()
-            },
-            body: JSON.stringify({login})
-        }).then(res => {
-            ok = res.ok;
-            return res.json();
-        }).then(data => {
-            if (ok) {
-                // todo setUser
-                // setUser({...user, login});
+        axios.put(getApiUrl() + '/user/' + user.id, JSON.stringify({login}))
+            .then(res => {
+                // todo make server respond with token, not jwt-token
+                const userData = Object.assign({}, res.data);
+                userData.token = res.data['jwt-token'];
+                delete userData['jwt-token'];
+                dispatch(logInSuccess({...user, login, ...userData}));
                 setError('');
-                setTokenToLocalStorage(data['jwt-token']);
-            } else {
-                setError(data.message);
-                setLogin(user.login);
-            }
-        }).catch(e => {
-            setError(e.message);
-            setLogin(user.login);
-        }).finally(() => setStatus('default'));
+            })
+            .catch(e => {
+                if (axios.isAxiosError(e)) {
+                    setError(e.response?.data.message);
+                    setLogin(user.login);
+                }
+            })
+            .finally(() => setStatus('default'));
     }
 
-    const handleCancel = e => {
+    const handleCancel = (e: SyntheticEvent) => {
         e.preventDefault();
         setError('');
         setLogin(user.login);
         setStatus('default');
     }
 
-    const handleStartEdit = e => {
+    const handleStartEdit = (e: SyntheticEvent) => {
         e.preventDefault();
         setStatus('edit');
     }
@@ -72,8 +65,8 @@ const ResetLoginForm = () => {
                 {status === 'default' ? <button onClick={handleStartEdit}><FontAwesomeIcon icon={faEdit} /></button> :
                     status === 'edit' ?
                         <>
-                            {user.login !== login && <button disabled={status === 'pending'} onClick={handleSave}><FontAwesomeIcon icon={faCheck} /></button>}
-                            <button disabled={status === 'pending'} onClick={handleCancel}><FontAwesomeIcon icon={faXmark} /></button>
+                            {user.login !== login && <button onClick={handleSave}><FontAwesomeIcon icon={faCheck} /></button>}
+                            <button onClick={handleCancel}><FontAwesomeIcon icon={faXmark} /></button>
                         </>
                         :
                         <div className="spinner-container"><Spinner /></div>

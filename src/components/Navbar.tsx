@@ -1,16 +1,17 @@
-import {useState} from 'react';
+import {SyntheticEvent, useState} from 'react';
 import {getApiUrl, setApiUrl} from 'config';
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
 import {faBars, faCircleUser, faRightFromBracket, faStar, faXmark} from '@fortawesome/free-solid-svg-icons';
 import {NavLink, useNavigate} from 'react-router-dom';
 import {ConfigProvider, Dropdown} from 'antd';
-import {useAppDispatch, useAppSelector} from 'store';
+import {useAppDispatch} from 'store';
 import {logOut} from 'store/userSlice';
+import {useUser} from 'hooks/user';
 
 
 const Navbar = () => {
     const dispatch = useAppDispatch();
-    const {user, loading, error} = useAppSelector(state => state.user);
+    const {user} = useUser();
     const navigate = useNavigate();
     const pages = ['home'];
     if (user) {
@@ -26,14 +27,14 @@ const Navbar = () => {
 
     // debug only
     const [input, setInput] = useState(getApiUrl || '');
-    const handleClick = e => {
+    const handleClick = (e: SyntheticEvent) => {
         e.preventDefault();
         setApiUrl(input);
         setInput(getApiUrl());
     };
 
     const [menuOpened, setMenuOpened] = useState(false);
-    const handleNavigate = path => {
+    const handleNavigate = () => {
         setMenuOpened(false);
     };
 

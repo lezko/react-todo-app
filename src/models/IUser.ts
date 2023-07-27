@@ -4,6 +4,7 @@ export enum UserRole {
 }
 
 export interface IUser {
+    isInBan: boolean;
     id: number;
     color: string;
     login: string;

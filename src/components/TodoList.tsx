@@ -1,9 +1,9 @@
 import Todo from 'components/Todo';
 import {useContext} from 'react';
-import {TodosContext} from 'pages/todos-page';
+import {TodosContext, TodosContextType} from 'pages/todos-page';
 
 const TodoList = () => {
-    const {todos} = useContext(TodosContext);
+    const {todos} = useContext(TodosContext) as TodosContextType;
     if (todos.length === 0) {
         return <h3 style={{textAlign: 'center', marginTop: 40}}>No todos added yet</h3>
     }

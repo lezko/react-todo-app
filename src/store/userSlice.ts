@@ -8,6 +8,12 @@ interface UserState {
     error: string;
 }
 
+export interface LoggedInUserState {
+    user: IAuthUser;
+    loading: boolean;
+    error: string;
+}
+
 function saveUserToLocalStorage(user: IUser) {
     localStorage.setItem('user', JSON.stringify(user));
 }
