@@ -1,6 +1,7 @@
 import {ChangeEvent, FormEvent, useState} from 'react';
 import {useAppDispatch, useAppSelector} from 'store';
 import {logIn} from 'store/userActionCreators';
+import Spinner from 'components/Spinner';
 
 const SignInPage = () => {
     const dispatch = useAppDispatch();
@@ -29,7 +30,10 @@ const SignInPage = () => {
             <label htmlFor="password">Password:</label>
             <input disabled={loading} onChange={handleChange} value={data.password} type="password" name="password"
                    id="password" />
-            <button disabled={loading} type="submit">Sign in</button>
+            <div style={{display: 'flex', alignItems: 'center'}}>
+                <button disabled={loading} type="submit">Sign in</button>
+                {loading && <Spinner />}
+            </div>
             <div className="error" style={{color: 'red'}}>{error}</div>
         </form>
     );
