@@ -1,19 +1,25 @@
-import {useContext, useRef, useState} from 'react';
+import {createRef, FC, RefObject, useContext, useState} from 'react';
 import {getApiUrl} from 'config';
-import {TodosContext} from 'pages/todos-page';
-import {getTokenFromLocalStorage} from 'utils/tokenStorage';
+import {TodosContext, TodosContextType} from 'pages/todos-page';
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
 import {faCheck, faEdit, faStar, faTrash, faXmark} from '@fortawesome/free-solid-svg-icons';
-import {UserContext} from 'hooks/user';
 import useModal from 'antd/es/modal/useModal';
-import {getSettingsFromLocalStorage} from 'utils/settingsStorage';
 import Toggle from 'components/Toggle';
 import Checkbox from 'components/Checkbox';
 import Spinner from 'components/Spinner';
+import {useAppSelector} from 'store';
+import {ITodo} from 'models/ITodo';
+import axios from 'axios';
+import {useSettings} from 'hooks/settings';
 
-const Todo = ({todo}) => {
-    const {todos, setTodos} = useContext(TodosContext);
-    const {user} = useContext(UserContext);
+interface TodoProps {
+    todo: ITodo;
+}
+
+const Todo: FC<TodoProps> = ({todo}) => {
+    const {user} = useAppSelector(state => state.user);
+
+    const {todos, setTodos} = useContext(TodosContext) as TodosContextType;
     const [status, setStatus] = useState('default');
     const [hasDesc, setHasDesc] = useState(Boolean(todo.description));
     const [pending, setPending] = useState(false);
@@ -31,40 +37,34 @@ const Todo = ({todo}) => {
     };
 
     const [error, setError] = useState('');
-    const inputRef = useRef();
+    const inputRef: RefObject<HTMLInputElement> = createRef();
 
     const [{confirm}, contextHolder] = useModal();
-    const settings = getSettingsFromLocalStorage();
+    const settings = useSettings();
+    console.log(settings);
 
     const deleteTodo = () => {
         setPending(true);
-        fetch(getApiUrl() + '/todos/' + todo.id, {
-            method: 'delete',
-            headers: {
-                'ngrok-skip-browser-warning': '69420',
-                'authorization': getTokenFromLocalStorage()
-            }
-        })
-            .then(res => {
-                if (res.ok) {
-                    setTodos(todos.filter(t => t.id !== todo.id));
-                } else {
-                    console.error('Error while deleting todo: ' + JSON.stringify(res));
-                }
+        axios.delete(getApiUrl() + '/todos/' + todo.id)
+            .then(() => {
+                setTodos(todos.filter(t => t.id !== todo.id));
+                setError('');
             })
             .catch(e => {
-                setError(e.message);
+                if (axios.isAxiosError(e)) {
+                    setError(e.response?.data.message);
+                } else {
+                    setError(e.message);
+                }
             })
-            .finally(() => {
-                setPending(false);
-            });
+            .finally(() => setPending(false));
     };
 
     const startUpdate = () => {
         setStatus('edit');
     };
 
-    const updateCurrentTodo = (newData) => {
+    const updateCurrentTodo = (newData: any) => {
         setTodos(todos.map(t => {
             if (t.id === todo.id) {
                 return {
@@ -76,7 +76,7 @@ const Todo = ({todo}) => {
         }));
     };
 
-    const confirmUpdate = updatedData => {
+    const confirmUpdate = (updatedData: any) => {
         if (!editData.title) {
             setError('Title must not be empty');
             return;
@@ -88,48 +88,35 @@ const Todo = ({todo}) => {
 
         setError('');
         setPending(true);
-        fetch(getApiUrl() + '/todos/' + todo.id, {
-            method: 'put',
-            headers: {
-                'Content-Type': 'application/json',
-                'ngrok-skip-browser-warning': '69420',
-                'authorization': getTokenFromLocalStorage()
-            },
-            body: JSON.stringify({title: updatedData.title, description: updatedData.description, isCompleted: updatedData.completed}),
-        })
-            .then(res => {
-                if (res.ok) {
-                    setError('');
-                    updateCurrentTodo(updatedData);
-                    setEditData(updatedData);
-                    setStatus('default');
-                } else if (res.status === 400) {
-                    return res.json();
-                } else {
-                    setError(`Request failed: ${res.status}`);
-                    resetEditData();
-                }
-            })
-            .then(data => {
-                if (data) {
-                    setError(data.message);
-                    resetEditData();
-                }
+        axios.put(getApiUrl() + '/todos/' + todo.id, JSON.stringify({
+            title: updatedData.title,
+            description: updatedData.description,
+            isCompleted: updatedData.isCompleted
+        }))
+            .then(() => {
+                setError('');
+                updateCurrentTodo(updatedData);
+                setEditData(updatedData);
+                setStatus('default');
             })
             .catch(e => {
-                setError(e.message);
+                if (axios.isAxiosError(e)) {
+                    setError(e.response?.data.message);
+                } else {
+                    setError(e.message);
+                }
                 resetEditData();
             })
             .finally(() => setPending(false));
     };
 
     const cancelUpdate = () => {
-        setEditData({title: todo.title, description: todo.description});
+        setEditData({title: todo.title, description: todo.description, isCompleted: editData.isCompleted});
         setError('');
         setStatus('default');
     };
 
-    const handleChange = e => {
+    const handleChange = (e: any) => {
         setEditData({
             ...editData,
             [e.target.name]: e.target.value
@@ -162,7 +149,7 @@ const Todo = ({todo}) => {
 
     const getButtonsHtml = () => {
         if (status === 'default') {
-            if (+user.id === +todo.creator.id) {
+            if (user !== null && +user.id === +todo.creator.id) {
                 return (
                     <div className="todo__buttons">
                         <button disabled={pending} onClick={() => {
@@ -181,7 +168,8 @@ const Todo = ({todo}) => {
                             });
                         }}><FontAwesomeIcon icon={faTrash} />
                         </button>
-                        {!editData.isCompleted && <button disabled={pending} onClick={startUpdate}><FontAwesomeIcon icon={faEdit} /></button>}
+                        {!editData.isCompleted &&
+                            <button disabled={pending} onClick={startUpdate}><FontAwesomeIcon icon={faEdit} /></button>}
                     </div>
                 );
             }
@@ -201,7 +189,7 @@ const Todo = ({todo}) => {
         );
     };
 
-    const handleChangeCompleted = nextCompleted => {
+    const handleChangeCompleted = (nextCompleted: boolean) => {
         confirmUpdate({...editData, isCompleted: nextCompleted});
     };
     return (
@@ -211,7 +199,7 @@ const Todo = ({todo}) => {
 
             {status === 'default' &&
                 <Checkbox
-                    disabled={+user.id !== +todo.creator.id}
+                    disabled={user !== null && +user.id !== +todo.creator.id}
                     title={editData.isCompleted ? 'unmark completed' : 'mark completed'}
                     className="todo__checkbox"
                     checked={editData.isCompleted}

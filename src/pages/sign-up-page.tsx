@@ -1,10 +1,11 @@
-import {useContext, useState} from 'react';
+import {ChangeEvent, FormEvent, useState} from 'react';
 import {getApiUrl} from 'config';
-import {setTokenToLocalStorage} from 'utils/tokenStorage';
-import {UserContext} from 'hooks/user';
+import axios from 'axios';
+import {useAppDispatch} from 'store';
+import {logInError, logInSuccess} from 'store/userSlice';
 
 const SignUpPage = () => {
-    const {setUser} = useContext(UserContext);
+    const dispatch = useAppDispatch();
     const [pending, setPending] = useState(false);
     const [error, setError] = useState('');
     const [data, setData] = useState({
@@ -13,14 +14,14 @@ const SignUpPage = () => {
         confirmPassword: ''
     });
 
-    const handleChange = e => {
+    const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
         setData({
             ...data,
             [e.target.name]: e.target.value
         });
     };
 
-    const handleSubmit = e => {
+    const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         if (data.password !== data.confirmPassword) {
             setError('Passwords do not match');
@@ -29,35 +30,30 @@ const SignUpPage = () => {
             setError('');
         }
         setPending(true);
-        let ok = true;
-        fetch(getApiUrl() + '/register', {
-            method: 'post',
-            headers: {
-                'Content-Type': 'application/json',
-                'ngrok-skip-browser-warning': '69420',
-            },
-            body: JSON.stringify({
-                name: 'dummy name',
-                login: data.login,
-                password: data.password
-            }),
-        }).then(res => {
-            ok = res.ok;
-            return res.json();
-        }).then(data => {
-            if (ok) {
-                setTokenToLocalStorage(data['jwt-token']);
-                setUser(data);
+        axios.post(getApiUrl() + '/register', JSON.stringify({
+            name: 'dummy name',
+            login: data.login,
+            password: data.password
+        }))
+            .then(res => {
+                // todo make server respond with token, not jwt-token
+                const userData = Object.assign({}, res.data);
+                userData.token = res.data['jwt-token'];
+                delete userData['jwt-token'];
+                dispatch(logInSuccess(userData));
                 setError('');
-            } else {
-                setError(data.message);
-            }
-        }).catch(e => {
-            setUser(null);
-            setError(e.message);
-        }).finally(() => {
-            setPending(false);
-        })
+            })
+            .catch(e => {
+                if (axios.isAxiosError(e)) {
+                    const message = e.response?.data.message;
+                    dispatch(logInError(message));
+                    setError(message);
+                } else {
+                    setError(e.message);
+                    dispatch(logInError(e.message));
+                }
+            })
+            .finally(() => setPending(false));
     };
 
     return (

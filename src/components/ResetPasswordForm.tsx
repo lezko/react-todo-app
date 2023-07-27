@@ -1,8 +1,8 @@
-import {useState} from 'react';
+import {ChangeEvent, SyntheticEvent, useState} from 'react';
 import Spinner from 'components/Spinner';
 import {getApiUrl} from 'config';
-import {useUserContext} from 'hooks/user';
-import {getTokenFromLocalStorage, setTokenToLocalStorage} from 'utils/tokenStorage';
+import {useLoggedInUser} from 'hooks/user';
+import axios from 'axios';
 
 const initialData = {
     oldPassword: '',
@@ -11,55 +11,55 @@ const initialData = {
 };
 
 const ResetPasswordForm = () => {
-    const {user, setUser} = useUserContext();
-    const [status, setStatus] = useState('default'); // default, typingOldPassword, typingNewPassword
+    const {user} = useLoggedInUser();
+
+    const [status, setStatus] = useState<'default' | 'typingOldPassword' | 'typingNewPassword'>('default');
     const [pending, setPending] = useState(false);
     const [error, setError] = useState('');
     const [data, setData] = useState(initialData);
     const [notification, setNotification] = useState('');
 
-    const handleChange = e => {
+    const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
         setData({
             ...data,
             [e.target.name]: e.target.value
         });
     };
 
-    const handleStartClick = e => {
+    const handleStartClick = (e: SyntheticEvent) => {
         e.preventDefault();
         setStatus('typingOldPassword');
     };
 
-    const handleConfirmOldPassword = e => {
+    const handleConfirmOldPassword = (e: SyntheticEvent) => {
         setError('');
         e.preventDefault();
         setPending(true);
-        let ok;
-        fetch(getApiUrl() + '/login', {
-            method: 'post',
-            headers: {
-                'content-type': 'application/json',
-                'ngrok-skip-browser-warning': '69420',
-            },
-            body: JSON.stringify({login: user.login, password: data.oldPassword})
-        }).then(res => {
-            ok = res.ok;
-            return res.json();
-        }).then(data => {
-            if (ok) {
+        axios.post(getApiUrl() + '/login', JSON.stringify({login: user.login, password: data.oldPassword}))
+            .then(() => {
+                // todo maybe save new token
                 setError('');
                 setStatus('typingNewPassword');
-                setTokenToLocalStorage(data['jwt-token']);
-            } else {
-                setError(data.message);
-            }
-        }).catch(e => {
-            setError(e.message);
-        }).finally(() => setPending(false));
+            })
+            .catch(e => {
+                if (axios.isAxiosError(e)) {
+                    setError(e.response?.data.message);
+                } else {
+                    setError(e.message);
+                }
+            })
+            .finally(() => setPending(false));
     };
 
-    const handleConfirmNewPassword = e => {
+    const handleConfirmNewPassword = (e: SyntheticEvent) => {
         e.preventDefault();
+        if (data.newPassword.length < 3) {
+            setError('Password is too short');
+            return;
+        } else if (data.newPassword.length > 30) {
+            setError('Password is too long');
+            return;
+        }
         if (data.newPassword !== data.confirmNewPassword) {
             setError('Passwords do not match');
             return;
@@ -68,38 +68,31 @@ const ResetPasswordForm = () => {
         }
 
         setPending(true);
-        fetch(getApiUrl() + '/user/' + user.id, {
-            method: 'put',
-            headers: {
-                'content-type': 'application/json',
-                'ngrok-skip-browser-warning': '69420',
-                'authorization': getTokenFromLocalStorage()
-            },
-            body: JSON.stringify({password: data.newPassword})
-        }).then(res => {
-            if (res.ok) {
+        axios.put(getApiUrl() + '/user/' + user.id, JSON.stringify({password: data.newPassword}))
+            .then(() => {
                 setError('');
                 setStatus('default');
                 setData(initialData);
-                // todo show notification
+                // todo modal window notification
                 setNotification('Password updated!');
                 setTimeout(() => setNotification(''), 3000);
-                return;
-            }
-            return res.json();
-        }).then(data => {
-            if (data) {
-                setError(data.message);
-            }
-        }).finally(() => setPending(false));
-    }
+            })
+            .catch(e => {
+                if (axios.isAxiosError(e)) {
+                    setError(e.response?.data.message);
+                } else {
+                    setError(e.message);
+                }
+            })
+            .finally(() => setPending(false));
+    };
 
-    const handleCancel = e => {
+    const handleCancel = (e: SyntheticEvent) => {
         e.preventDefault();
         setStatus('default');
         setError('');
         setData(initialData);
-    }
+    };
 
     return (
         <form className="reset-password-form">
@@ -108,14 +101,16 @@ const ResetPasswordForm = () => {
                     {status === 'typingOldPassword' ?
                         <>
                             <label htmlFor="oldPassword">Your old password: </label>
-                            <input autoFocus value={data.oldPassword} onChange={handleChange} type="password" name="oldPassword"
+                            <input autoFocus value={data.oldPassword} onChange={handleChange} type="password"
+                                   name="oldPassword"
                                    id="oldPassword" />
                             <button disabled={pending} onClick={handleConfirmOldPassword}>Continue</button>
                         </>
                         :
                         <>
                             <label htmlFor="newPassword">Enter new password: </label>
-                            <input autoFocus value={data.newPassword} onChange={handleChange} type="password" name="newPassword"
+                            <input autoFocus value={data.newPassword} onChange={handleChange} type="password"
+                                   name="newPassword"
                                    id="newPassword" />
                             <label htmlFor="confirmNewPassword">Confirm new password: </label>
                             <input value={data.confirmNewPassword} onChange={handleChange} type="password"

@@ -1,17 +1,24 @@
 import User from 'components/User';
-import {useUserContext} from 'hooks/user';
+import {useAppSelector} from 'store';
+import {IUser} from 'models/IUser';
+import {FC} from 'react';
 
-const UserList = ({users, setUsers}) => {
-    const {user: loggedUser, setUser} = useUserContext();
-    const handleUpdate = user => {
+interface UserListProps {
+    users: IUser[];
+    setUsers: (users: IUser[]) => void;
+}
+
+const UserList: FC<UserListProps> = ({users, setUsers}) => {
+    const {user: loggedUser} = useAppSelector(state => state.user);
+    const handleUpdate = (user: IUser) => {
         setUsers(users.map(u => {
             if (u.id === user.id) {
                 return user;
             }
             return u;
         }));
-        if (user.id === loggedUser.id) {
-            setUser(user);
+        if (loggedUser && user.id === loggedUser.id) {
+            // setUser(user);
         }
     };
     return (

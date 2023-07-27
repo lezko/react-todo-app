@@ -1,5 +1,3 @@
-import React from 'react';
-import ReactDOM from 'react-dom/client';
 import 'scss/index.scss';
 import {createHashRouter, Navigate, RouterProvider} from 'react-router-dom';
 import ErrorPage from 'error-page';
@@ -13,6 +11,9 @@ import SignInPage from 'pages/sign-in-page';
 import ProfilePage from 'pages/profile-page';
 import SettingsPage from 'pages/settings-page';
 import Root from 'pages/root';
+import {createRoot} from 'react-dom/client';
+import {Provider} from 'react-redux';
+import {store} from 'store';
 
 const router = createHashRouter([
     {
@@ -66,9 +67,11 @@ const router = createHashRouter([
     }
 ]);
 
-const root = ReactDOM.createRoot(document.getElementById('root'));
+const root = createRoot(document.getElementById('root') as Element);
 root.render(
-//    <React.StrictMode>
-        <RouterProvider router={router} />
-  //  </React.StrictMode>
+    //<StrictMode>
+        <Provider store={store}>
+            <RouterProvider router={router} />
+        </Provider>
+    //</StrictMode>
 );

@@ -1,98 +1,82 @@
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
 import {faBan, faCheck, faEyedropper, faStar, faXmark} from '@fortawesome/free-solid-svg-icons';
-import {useRef, useState} from 'react';
-import {useUserContext} from 'hooks/user';
+import {ChangeEvent, createRef, FC, useState} from 'react';
 import {getApiUrl} from 'config';
-import {getTokenFromLocalStorage} from 'utils/tokenStorage';
 import Toggle from 'components/Toggle';
 import useModal from 'antd/es/modal/useModal';
-import {getSettingsFromLocalStorage} from 'utils/settingsStorage';
+import {IUser, UserRole} from 'models/IUser';
+import axios from 'axios';
+import {useLoggedInUser} from 'hooks/user';
+import {useSettings} from 'hooks/settings';
 
-const User = ({user, onUpdate}) => {
+interface UserProps {
+    user: IUser;
+    onUpdate: (user: IUser) => void;
+}
+
+const User: FC<UserProps> = ({user, onUpdate}) => {
+    const {user: loggedUser} = useLoggedInUser();
+
     const [color, setColor] = useState(user.color);
     const [isAdmin, setIsAdmin] = useState(user.role === 'ROLE_ADMIN');
     const [isBanned, setIsBanned] = useState(user.isInBan);
 
     const [pending, setPending] = useState(false);
-    const {user: loggedUser} = useUserContext();
-    const colorInputRef = useRef();
+    const colorInputRef = createRef<HTMLInputElement>();
 
     const resetData = () => {
         setColor(user.color);
-        setIsAdmin(user.role === 'ROLE_ADMIN');
-        setIsBanned(user.inBan);
+        setIsAdmin(user.role === UserRole.Admin);
+        setIsBanned(user.isInBan);
     };
 
-    const handleColorChange = e => {
+    const handleColorChange = (e: ChangeEvent<HTMLInputElement>) => {
         setColor(e.target.value);
     };
 
-    const handleIsAdminChange = nextIsAdmin => {
+    const handleIsAdminChange = (nextIsAdmin: boolean) => {
         setIsAdmin(nextIsAdmin);
-        confirmUpdate({role: nextIsAdmin ? 'ROLE_ADMIN' : 'ROLE_USER'});
+        confirmUpdate({role: nextIsAdmin ? UserRole.Admin : UserRole.User});
     };
 
-    const handleIsBannedChange = nextIsBanned => {
+    const handleIsBannedChange = (nextIsBanned: boolean) => {
         setIsBanned(nextIsBanned);
-        setPending(true);
-        fetch(getApiUrl() + '/ban/' + user.id, {
-            method: 'put',
-            headers: {
-                'ngrok-skip-browser-warning': '69420',
-                'authorization': getTokenFromLocalStorage()
-            },
-        }).then(res => {
-            if (res.ok) {
-                onUpdate({
-                    ...user,
-                    isInBan: nextIsBanned
-                });
-                return;
-            }
-            return res.json();
-        }).then(err => {
-            if (err) {
-                console.error(err.error);
+        // todo make server handle ban requests as regular update
+        axios.put(getApiUrl() + '/ban/' + user.id)
+            .then(() => {
+                onUpdate({...user, isInBan: nextIsBanned});
+            })
+            .catch(e => {
                 resetData();
-            }
-        }).catch(e => {
-            console.error(e);
-            resetData();
-        }).finally(() => setPending(false));
+                // todo show error in modal
+                if (axios.isAxiosError(e)) {
+                    console.error(e.response?.data.message);
+                } else {
+                    console.error(e.message);
+                }
+            })
+            .finally(() => setPending(false));
     };
 
-    const confirmUpdate = updatedData => {
+    const confirmUpdate = (updatedData: any) => {
         setPending(true);
-        fetch(getApiUrl() + '/user/' + user.id, {
-            method: 'put',
-            headers: {
-                'Content-Type': 'application/json',
-                'ngrok-skip-browser-warning': '69420',
-                'authorization': getTokenFromLocalStorage()
-            },
-            body: JSON.stringify(updatedData)
-        }).then(res => {
-            if (res.ok) {
+        axios.put(getApiUrl() + '/user/' + user.id, JSON.stringify(updatedData))
+            .then(() => {
                 onUpdate({
                     ...user,
                     ...updatedData
                 });
-                return;
-            }
-            return res.json();
-        }).then(err => {
-            if (err) {
-                console.error(err.error);
+            })
+            .catch(e => {
+                // todo display error
+                console.error(e);
                 resetData();
-            }
-        }).catch(e => {
-            console.error(e);
-            resetData();
-        }).finally(() => setPending(false));
+            })
+            .finally(() => setPending(false));
     };
 
     const [{confirm}, contextHolder] = useModal();
-    const settings = getSettingsFromLocalStorage();
+    const settings = useSettings();
 
     return (
         <div className="user">
@@ -100,14 +84,16 @@ const User = ({user, onUpdate}) => {
             <span style={{color: user.color}} className="user__name">{user.login}</span>
             {' '}
 
-            {loggedUser.role === 'ROLE_ADMIN' ?
+            {/*todo logged-in-interface + hook*/}
+            {loggedUser && loggedUser.role === 'ROLE_ADMIN' ?
                 <>
                     <div
                         className="picker"
                         style={{pointerEvents: pending ? 'none' : 'auto'}}
                         onClick={() => {
                             if (!pending) {
-                                colorInputRef.current.click();
+                                // todo get rid of '!'
+                                colorInputRef.current!.click();
                             }
                         }}
                     >
@@ -124,7 +110,8 @@ const User = ({user, onUpdate}) => {
                     }
 
                     <div className="toggles">
-                        <Toggle title={isAdmin ? 'unmake admin' : 'make admin'} icon={faStar} iconColor={'gold'} active={isAdmin} setActive={handleIsAdminChange} beforeChange={() => {
+                        <Toggle title={isAdmin ? 'unmake admin' : 'make admin'} icon={faStar} iconColor={'gold'}
+                                active={isAdmin} setActive={handleIsAdminChange} beforeChange={() => {
                             return new Promise((resolve, reject) => {
                                 if (!settings.confirmChangeRole) {
                                     resolve();
@@ -146,7 +133,8 @@ const User = ({user, onUpdate}) => {
                                 });
                             });
                         }} />
-                        <Toggle title={isBanned ? 'unban' : 'ban'} icon={faBan} iconColor={'red'} active={isBanned} setActive={handleIsBannedChange} beforeChange={() => {
+                        <Toggle title={isBanned ? 'unban' : 'ban'} icon={faBan} iconColor={'red'} active={isBanned}
+                                setActive={handleIsBannedChange} beforeChange={() => {
                             return new Promise((resolve, reject) => {
                                 if (!settings.confirmChangeBanned) {
                                     resolve();
@@ -154,7 +142,7 @@ const User = ({user, onUpdate}) => {
                                 }
                                 confirm({
                                     title: 'Confirmation',
-                                    content: user.inBan ?
+                                    content: user.isInBan ?
                                         <p>You are unbanning user <i>{user.login}</i></p> :
                                         <p>You are banning user <i>{user.login}</i></p>,
                                     okType: 'default',
@@ -174,7 +162,7 @@ const User = ({user, onUpdate}) => {
                 <>
                     {user.role === 'ROLE_ADMIN' &&
                         <span style={{color: user.color}} className="star"><FontAwesomeIcon icon={faStar} /></span>}
-                    {user.inBan && <FontAwesomeIcon className="ban-icon" icon={faBan} />}
+                    {user.isInBan && <FontAwesomeIcon className="ban-icon" icon={faBan} />}
                 </>
             }
 
