@@ -1,6 +1,6 @@
 import {createSlice, PayloadAction} from '@reduxjs/toolkit';
 
-interface SettingsState {
+export interface SettingsState {
     confirmChangeBanned: boolean;
     confirmChangeRole: boolean;
     confirmDeleteTodo: boolean;
@@ -17,14 +17,16 @@ const initialState: SettingsState = {
 };
 
 function getSettingsFromLocalStorage() {
+    let finalSettings = initialState;
     const settingsString = localStorage.getItem('settings');
     if (settingsString) {
         const settings = JSON.parse(settingsString);
         // in case of user modified localstorage manually and removed some settings
-        return {...initialState, ...settings};
+        finalSettings = {...finalSettings, ...settings};
     }
-    saveSettingsToLocalStorage(initialState);
-    return initialState;
+    // todo remove side effect
+    saveSettingsToLocalStorage(finalSettings);
+    return finalSettings;
 }
 
 function saveSettingsToLocalStorage(settings: SettingsState) {

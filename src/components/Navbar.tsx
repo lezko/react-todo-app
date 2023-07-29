@@ -77,15 +77,18 @@ const Navbar = () => {
                                         controlItemBgHover: 'rgb(102, 21, 95)',
                                     }
                                 }}>
-                                    <Dropdown overlayClassName="nav-dropdown"
-                                              menu={{items: menuItems}}
-                                              trigger={['click']}>
+                                    <Dropdown
+                                        overlayClassName="nav-dropdown"
+                                        menu={{items: menuItems}}
+                                        trigger={['click']}
+                                    >
                                         <a onClick={e => e.preventDefault()}
                                            className="current-user">
                                             <FontAwesomeIcon className="mobile-only profile-icon" icon={faCircleUser} />
                                             <span style={{color: user.color}}>{user.login}</span>
                                             {user.role === 'ROLE_ADMIN' &&
-                                                <FontAwesomeIcon style={{color: user.color}} className="star" icon={faStar} />}
+                                                <FontAwesomeIcon style={{color: user.color}} className="star"
+                                                                 icon={faStar} />}
                                         </a>
                                     </Dropdown>
                                 </ConfigProvider>

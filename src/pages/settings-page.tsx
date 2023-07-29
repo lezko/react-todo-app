@@ -65,7 +65,7 @@ const SettingsPage = () => {
                 </li>
                 <li>
                     <span>Allow editing completed</span>
-                    <Toggle active={allowEditingCompleted} setActive={setAllowEditingCompleted} />
+                    <Toggle active={allowEditingCompleted} setActive={handleChangeAllowEditingCompleted} />
                 </li>
             </ul>
         </div>

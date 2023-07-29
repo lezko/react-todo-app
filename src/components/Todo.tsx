@@ -170,7 +170,7 @@ const Todo: FC<TodoProps> = ({todo}) => {
                             });
                         }}><FontAwesomeIcon icon={faTrash} />
                         </button>
-                        {!editData.isCompleted &&
+                        {(!editData.isCompleted || settings.allowEditingCompleted) &&
                             <button disabled={pending} onClick={startUpdate}><FontAwesomeIcon icon={faEdit} /></button>}
                     </div>
                 );
@@ -192,7 +192,7 @@ const Todo: FC<TodoProps> = ({todo}) => {
     };
 
     const handleChangeCompleted = useCallback((nextCompleted: boolean) => {
-        confirmUpdate({isCompleted: nextCompleted});
+        confirmUpdate({...editData, isCompleted: nextCompleted});
     }, [editData]);
 
     return (

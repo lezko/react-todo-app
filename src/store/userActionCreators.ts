@@ -2,6 +2,7 @@ import {AppDispatch} from 'store/index';
 import {logInError, logInSuccess, startLogIn} from 'store/userSlice';
 import axios from 'axios';
 import {ApiUrl} from 'api-url';
+import {IAuthUser} from 'models/IAuthUser';
 
 // todo proper exception handling
 export function logIn(login: string, password: string) {
@@ -13,6 +14,7 @@ export function logIn(login: string, password: string) {
             const userData = Object.assign({}, response.data);
             userData.token = response.data['jwt-token'];
             delete userData['jwt-token'];
+            userData.id = +userData.id;
             dispatch(logInSuccess(userData));
         } catch (e: unknown) {
             if (axios.isAxiosError(e)) {

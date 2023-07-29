@@ -8,6 +8,8 @@ import {ApiUrl} from 'api-url';
 import {Button, Modal} from 'antd';
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
 import {faPlus} from '@fortawesome/free-solid-svg-icons';
+import {useSettings} from 'hooks/settings';
+import {useLoggedInUser} from 'hooks/user';
 
 export type TodosContextType = { todos: ITodo[], setTodos: (todos: ITodo[]) => void };
 export const TodosContext = createContext<TodosContextType | null>(null);
@@ -67,6 +69,9 @@ const TodosPage = () => {
             });
     };
 
+    const settings = useSettings();
+    const user = useLoggedInUser();
+
     return (
         <div className="main">
             {loading ?
@@ -104,7 +109,9 @@ const TodosPage = () => {
                                 <span>new todo</span>
                             </button>
                         </div>
-                        <TodoList />
+                        <TodoList
+                            todos={settings.showOnlyMyTodos ? todos.filter(t => user.user.id === t.creator.id) : todos}
+                        />
                     </TodosContext.Provider>
             }
         </div>
