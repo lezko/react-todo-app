@@ -1,11 +1,13 @@
 import TodoList from 'components/TodoList';
 import {createContext, useEffect, useState} from 'react';
-import NewTodo from 'components/NewTodo';
+import NewTodoForm, {NewTodoData} from 'components/NewTodoForm';
 import axios from 'axios';
 import {ITodo} from 'models/ITodo';
 import Spinner from 'components/Spinner';
 import {ApiUrl} from 'api-url';
-import {Modal} from 'antd';
+import {Button, Modal} from 'antd';
+import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
+import {faPlus} from '@fortawesome/free-solid-svg-icons';
 
 export type TodosContextType = { todos: ITodo[], setTodos: (todos: ITodo[]) => void };
 export const TodosContext = createContext<TodosContextType | null>(null);
@@ -36,6 +38,35 @@ const TodosPage = () => {
 
     const [newTodoModalOpen, setNewTodoModalOpen] = useState(false);
 
+    // todo extract NewTodo component
+    const [data, setData] = useState<NewTodoData>({title: '', description: ''});
+    const [hasDescription, setHasDescription] = useState(false);
+
+    const [pending, setPending] = useState(false);
+    const [newTodoError, setNewTodoError] = useState('');
+
+    const handleSubmit = (e: any) => {
+        e.preventDefault();
+        setPending(true);
+        axios.post(ApiUrl.createTodo(), JSON.stringify(data))
+            .then(res => {
+                setTodos([...todos, res.data]);
+                setNewTodoError('');
+                setData({title: '', description: ''});
+                setNewTodoModalOpen(false);
+            })
+            .catch(e => {
+                if (axios.isAxiosError(e)) {
+                    setNewTodoError(e.response?.data.message);
+                } else {
+                    setNewTodoError(e.message);
+                }
+            })
+            .finally(() => {
+                setPending(false);
+            });
+    };
+
     return (
         <div className="main">
             {loading ?
@@ -48,11 +79,30 @@ const TodosPage = () => {
                             closable
                             onCancel={() => setNewTodoModalOpen(false)}
                             okButtonProps={{type: 'default'}}
+                            onOk={handleSubmit}
+                            // todo autofocus title input
+                            footer={<div style={{display: 'flex', alignItems: 'center', justifyContent: 'flex-end'}}>
+                                {pending ? <div style={{marginRight: 10}}><Spinner /></div> : null}
+                                <Button onClick={() => setNewTodoModalOpen(false)}>Cancel</Button>
+                                <Button onClick={handleSubmit}>OK</Button>
+                            </div>}
                         >
-                            <NewTodo />
+                            <>
+                                <NewTodoForm
+                                    error={newTodoError}
+                                    disabled={pending}
+                                    data={data}
+                                    setData={setData}
+                                    hasDescription={hasDescription}
+                                    setHasDescription={setHasDescription}
+                                />
+                            </>
                         </Modal>
                         <div className="toolbar">
-                            <button onClick={() => setNewTodoModalOpen(true)}>new todo</button>
+                            <button className="new-todo-btn" onClick={() => setNewTodoModalOpen(true)}>
+                                <FontAwesomeIcon icon={faPlus} />
+                                <span>new todo</span>
+                            </button>
                         </div>
                         <TodoList />
                     </TodosContext.Provider>

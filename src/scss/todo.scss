@@ -36,7 +36,7 @@
   }
 
   &__description {
-    overflow-y: auto;
+    overflow-wrap: break-word;
     grid-area: desc;
     font-size: .9rem;
   }

@@ -4,12 +4,16 @@ interface SettingsState {
     confirmChangeBanned: boolean;
     confirmChangeRole: boolean;
     confirmDeleteTodo: boolean;
+    showOnlyMyTodos: boolean;
+    allowEditingCompleted: boolean;
 }
 
 const initialState: SettingsState = {
     confirmChangeBanned: true,
     confirmChangeRole: true,
-    confirmDeleteTodo: true
+    confirmDeleteTodo: true,
+    showOnlyMyTodos: false,
+    allowEditingCompleted: false,
 };
 
 function getSettingsFromLocalStorage() {

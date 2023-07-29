@@ -1,4 +1,12 @@
 .toolbar {
   max-width: 400px;
-  margin: 0 auto;
+  margin: 0 auto 20px;
+
+  .new-todo-btn {
+    font-size: 1rem;
+    display: flex;
+    align-items: center;
+    padding: 7px 10px;
+    & > * + * {margin-left: 5px}
+  }
 }

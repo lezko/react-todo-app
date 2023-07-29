@@ -41,7 +41,6 @@ const Todo: FC<TodoProps> = ({todo}) => {
 
     const [{confirm}, contextHolder] = useModal();
     const settings = useSettings();
-    console.log(settings);
 
     const deleteTodo = () => {
         setPending(true);
@@ -193,7 +192,7 @@ const Todo: FC<TodoProps> = ({todo}) => {
     };
 
     const handleChangeCompleted = useCallback((nextCompleted: boolean) => {
-        confirmUpdate({...editData, isCompleted: nextCompleted});
+        confirmUpdate({isCompleted: nextCompleted});
     }, [editData]);
 
     return (
