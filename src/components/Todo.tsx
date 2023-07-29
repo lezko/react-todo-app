@@ -1,4 +1,4 @@
-import {createRef, FC, RefObject, useContext, useState} from 'react';
+import {createRef, FC, RefObject, useCallback, useContext, useState} from 'react';
 import {TodosContext, TodosContextType} from 'pages/todos-page';
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
 import {faCheck, faEdit, faStar, faTrash, faXmark} from '@fortawesome/free-solid-svg-icons';
@@ -138,8 +138,11 @@ const Todo: FC<TodoProps> = ({todo}) => {
                 </div>
                 <div className="desc-toggle">
                     <span>Description</span>
-                    <Toggle title={hasDesc ? 'remove description' : 'add description'} active={hasDesc}
-                            setActive={setHasDesc} />
+                    <Toggle
+                        title={hasDesc ? 'remove description' : 'add description'}
+                        active={hasDesc}
+                        setActive={setHasDesc}
+                    />
                 </div>
                 {hasDesc &&
                     <textarea rows={5} value={editData.description} onChange={handleChange} name="description" />}
@@ -189,9 +192,10 @@ const Todo: FC<TodoProps> = ({todo}) => {
         );
     };
 
-    const handleChangeCompleted = (nextCompleted: boolean) => {
+    const handleChangeCompleted = useCallback((nextCompleted: boolean) => {
         confirmUpdate({...editData, isCompleted: nextCompleted});
-    };
+    }, [editData]);
+
     return (
         <div className={'todo ' + (status === 'edit' ? 'edit' : '')}>
             {contextHolder}

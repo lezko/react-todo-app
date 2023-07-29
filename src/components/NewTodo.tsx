@@ -3,6 +3,11 @@ import {TodosContext, TodosContextType} from 'pages/todos-page';
 import axios from 'axios';
 import Spinner from 'components/Spinner';
 import {ApiUrl} from 'api-url';
+import Toggle from 'components/Toggle';
+
+interface NewTodoProps {
+
+}
 
 const NewTodo = () => {
     const {todos, setTodos} = useContext(TodosContext) as TodosContextType;
@@ -12,7 +17,7 @@ const NewTodo = () => {
         title: '',
         description: '',
     });
-    const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const handleChange = (e: any) => {
         setData({
             ...data,
             [e.target.name]: e.target.value
@@ -36,18 +41,42 @@ const NewTodo = () => {
             })
             .finally(() => setPending(false));
     };
+
+    const [hasDesc, setHasDesc] = useState(false);
+
     return (
         <div className="new-todo">
-            <h3>New Todo:</h3>
             <form onSubmit={handleSubmit}>
                 <label htmlFor="title">Title:</label>
-                <input value={data.title} onChange={handleChange} disabled={pending} type="text" name="title"
-                       id="title" />
-                <label htmlFor="description">Description:</label>
-                <input value={data.description} onChange={handleChange} disabled={pending} type="text"
-                       name="description" id="description" />
+                <input
+                    value={data.title}
+                    onChange={handleChange}
+                    disabled={pending}
+                    type="text"
+                    name="title"
+                    id="title"
+                />
+
+                <div className="desc-toggle">
+                    <span>Description</span>
+                    <Toggle
+                        title={hasDesc ? 'remove description' : 'add description'}
+                        active={hasDesc}
+                        setActive={setHasDesc}
+                    />
+                </div>
+                {hasDesc && <textarea name="description" rows={5}  onChange={handleChange} />}
+                {/*<label htmlFor="description">Description:</label>*/}
+                {/*<input*/}
+                {/*    value={data.description}*/}
+                {/*    onChange={handleChange}*/}
+                {/*    disabled={pending}*/}
+                {/*    type="text"*/}
+                {/*    name="description"*/}
+                {/*    id="description"*/}
+                {/*/>*/}
                 <div style={{display: 'flex', alignItems: 'center'}}>
-                    <button disabled={pending} type="submit">Add</button>
+                    {/*<button disabled={pending} type="submit">Add</button>*/}
                     {pending && <Spinner />}
                 </div>
                 {error && <div className="error" style={{color: 'red'}}>{error}</div>}

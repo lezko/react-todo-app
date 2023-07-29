@@ -60,6 +60,7 @@ export const userSlice = createSlice({
             state.user = null;
             state.loading = false;
             state.error = action.payload;
+            removeUserFromLocalStorage();
         },
         logOut(state) {
             state.user = null;

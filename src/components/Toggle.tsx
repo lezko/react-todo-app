@@ -1,6 +1,6 @@
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
 import {IconProp} from '@fortawesome/fontawesome-svg-core';
-import {FC} from 'react';
+import {FC, memo} from 'react';
 
 interface ToggleProps {
     active: boolean;
@@ -11,7 +11,7 @@ interface ToggleProps {
     beforeChange?: () => Promise<void>;
 }
 
-const Toggle: FC<ToggleProps> = ({active, title, setActive, icon, iconColor = 'white', beforeChange}) => {
+const Toggle: FC<ToggleProps> = memo(({active, title, setActive, icon, iconColor = 'white', beforeChange}) => {
     return (
         <div
             title={title || (active ? 'disable' : 'enable')}
@@ -31,6 +31,6 @@ const Toggle: FC<ToggleProps> = ({active, title, setActive, icon, iconColor = 'w
             </div>
         </div>
     );
-};
+});
 
 export default Toggle;

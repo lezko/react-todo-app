@@ -1,6 +1,6 @@
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
 import {faBan, faCheck, faEyedropper, faStar, faXmark} from '@fortawesome/free-solid-svg-icons';
-import {ChangeEvent, createRef, FC, useState} from 'react';
+import {ChangeEvent, createRef, FC, useCallback, useState} from 'react';
 import Toggle from 'components/Toggle';
 import useModal from 'antd/es/modal/useModal';
 import {IUser, UserRole} from 'models/IUser';
@@ -15,7 +15,7 @@ interface UserProps {
 }
 
 const User: FC<UserProps> = ({user, onUpdate}) => {
-    const {user: loggedUser} = useLoggedInUser();
+    const {user: loggedInUser} = useLoggedInUser();
 
     const [color, setColor] = useState(user.color);
     const [isAdmin, setIsAdmin] = useState(user.role === 'ROLE_ADMIN');
@@ -38,6 +38,52 @@ const User: FC<UserProps> = ({user, onUpdate}) => {
         setIsAdmin(nextIsAdmin);
         confirmUpdate({role: nextIsAdmin ? UserRole.Admin : UserRole.User});
     };
+
+    const beforeIsAdminChange = useCallback(() => {
+        return new Promise<void>((resolve, reject) => {
+            if (!settings.confirmChangeRole) {
+                resolve();
+                return;
+            }
+            confirm({
+                title: 'Confirmation',
+                content: user.role === 'ROLE_ADMIN' ?
+                    <p>You are revoking admin privileges from user <i>{user.login}</i></p> :
+                    <p>You are granting admin privileges to user <i>{user.login}</i></p>,
+                okType: 'default',
+                onOk: () => {
+                    resolve();
+                },
+                onCancel: () => {
+                    reject();
+                },
+                closable: true,
+            });
+        });
+    }, [user.role]);
+
+    const beforeIsBannedChange = useCallback(() => {
+        return new Promise<void>((resolve, reject) => {
+            if (!settings.confirmChangeBanned) {
+                resolve();
+                return;
+            }
+            confirm({
+                title: 'Confirmation',
+                content: user.isInBan ?
+                    <p>You are unbanning user <i>{user.login}</i></p> :
+                    <p>You are banning user <i>{user.login}</i></p>,
+                okType: 'default',
+                onOk: () => {
+                    resolve();
+                },
+                onCancel: () => {
+                    reject();
+                },
+                closable: true,
+            });
+        });
+    }, [user.isInBan]);
 
     const handleIsBannedChange = (nextIsBanned: boolean) => {
         setIsBanned(nextIsBanned);
@@ -83,9 +129,7 @@ const User: FC<UserProps> = ({user, onUpdate}) => {
             {contextHolder}
             <span style={{color: user.color}} className="user__name">{user.login}</span>
             {' '}
-
-            {/*todo logged-in-interface + hook*/}
-            {loggedUser && loggedUser.role === 'ROLE_ADMIN' ?
+            {loggedInUser.role === 'ROLE_ADMIN' ?
                 <>
                     <div
                         className="picker"
@@ -110,52 +154,21 @@ const User: FC<UserProps> = ({user, onUpdate}) => {
                     }
 
                     <div className="toggles">
-                        <Toggle title={isAdmin ? 'unmake admin' : 'make admin'} icon={faStar} iconColor={'gold'}
-                                active={isAdmin} setActive={handleIsAdminChange} beforeChange={() => {
-                            return new Promise((resolve, reject) => {
-                                if (!settings.confirmChangeRole) {
-                                    resolve();
-                                    return;
-                                }
-                                confirm({
-                                    title: 'Confirmation',
-                                    content: user.role === 'ROLE_ADMIN' ?
-                                        <p>You are revoking admin privileges from user <i>{user.login}</i></p> :
-                                        <p>You are granting admin privileges to user <i>{user.login}</i></p>,
-                                    okType: 'default',
-                                    onOk: () => {
-                                        resolve();
-                                    },
-                                    onCancel: () => {
-                                        reject();
-                                    },
-                                    closable: true,
-                                });
-                            });
-                        }} />
-                        <Toggle title={isBanned ? 'unban' : 'ban'} icon={faBan} iconColor={'red'} active={isBanned}
-                                setActive={handleIsBannedChange} beforeChange={() => {
-                            return new Promise((resolve, reject) => {
-                                if (!settings.confirmChangeBanned) {
-                                    resolve();
-                                    return;
-                                }
-                                confirm({
-                                    title: 'Confirmation',
-                                    content: user.isInBan ?
-                                        <p>You are unbanning user <i>{user.login}</i></p> :
-                                        <p>You are banning user <i>{user.login}</i></p>,
-                                    okType: 'default',
-                                    onOk: () => {
-                                        resolve();
-                                    },
-                                    onCancel: () => {
-                                        reject();
-                                    },
-                                    closable: true,
-                                });
-                            });
-                        }} />
+                        <Toggle
+                            title={isAdmin ? 'unmake admin' : 'make admin'}
+                            icon={faStar} iconColor={'gold'}
+                            active={isAdmin}
+                            setActive={handleIsAdminChange}
+                            beforeChange={beforeIsAdminChange}
+                        />
+                        <Toggle
+                            title={isBanned ? 'unban' : 'ban'}
+                            icon={faBan}
+                            iconColor={'red'}
+                            active={isBanned}
+                            setActive={handleIsBannedChange}
+                            beforeChange={beforeIsBannedChange}
+                        />
                     </div>
                 </>
                 :

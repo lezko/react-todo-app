@@ -19,7 +19,8 @@ function getSettingsFromLocalStorage() {
         // in case of user modified localstorage manually and removed some settings
         return {...initialState, ...settings};
     }
-    return null;
+    saveSettingsToLocalStorage(initialState);
+    return initialState;
 }
 
 function saveSettingsToLocalStorage(settings: SettingsState) {

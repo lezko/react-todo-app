@@ -5,6 +5,7 @@ import axios from 'axios';
 import {ITodo} from 'models/ITodo';
 import Spinner from 'components/Spinner';
 import {ApiUrl} from 'api-url';
+import {Modal} from 'antd';
 
 export type TodosContextType = { todos: ITodo[], setTodos: (todos: ITodo[]) => void };
 export const TodosContext = createContext<TodosContextType | null>(null);
@@ -33,6 +34,8 @@ const TodosPage = () => {
         };
     }, []);
 
+    const [newTodoModalOpen, setNewTodoModalOpen] = useState(false);
+
     return (
         <div className="main">
             {loading ?
@@ -40,7 +43,17 @@ const TodosPage = () => {
                 error
                     ? <div style={{color: 'red'}}>{error}</div> :
                     <TodosContext.Provider value={{todos, setTodos}}>
-                        <NewTodo />
+                        <Modal
+                            open={newTodoModalOpen}
+                            closable
+                            onCancel={() => setNewTodoModalOpen(false)}
+                            okButtonProps={{type: 'default'}}
+                        >
+                            <NewTodo />
+                        </Modal>
+                        <div className="toolbar">
+                            <button onClick={() => setNewTodoModalOpen(true)}>new todo</button>
+                        </div>
                         <TodoList />
                     </TodosContext.Provider>
             }

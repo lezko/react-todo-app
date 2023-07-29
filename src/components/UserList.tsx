@@ -1,7 +1,9 @@
 import User from 'components/User';
-import {useAppSelector} from 'store';
 import {IUser} from 'models/IUser';
 import {FC} from 'react';
+import {useLoggedInUser} from 'hooks/user';
+import {useAppDispatch} from 'store';
+import {logInSuccess} from 'store/userSlice';
 
 interface UserListProps {
     users: IUser[];
@@ -9,7 +11,8 @@ interface UserListProps {
 }
 
 const UserList: FC<UserListProps> = ({users, setUsers}) => {
-    const {user: loggedUser} = useAppSelector(state => state.user);
+    const dispatch = useAppDispatch();
+    const {user: loggedInUser} = useLoggedInUser();
     const handleUpdate = (user: IUser) => {
         setUsers(users.map(u => {
             if (u.id === user.id) {
@@ -17,8 +20,8 @@ const UserList: FC<UserListProps> = ({users, setUsers}) => {
             }
             return u;
         }));
-        if (loggedUser && user.id === loggedUser.id) {
-            // setUser(user);
+        if (user.id === loggedInUser.id) {
+            dispatch(logInSuccess({...loggedInUser, ...user}));
         }
     };
     return (

@@ -7,7 +7,6 @@ import {setSettings} from 'store/settingsSlice';
 const SettingsPage = () => {
     const dispatch = useAppDispatch();
     const settings = useSettings();
-    console.log(settings);
     const [roleActive, setRoleActive] = useState(settings.confirmChangeRole);
     const [banActive, setBanActive] = useState(settings.confirmChangeBanned);
     const [deleteActive, setDeleteActive] = useState(settings.confirmDeleteTodo);
@@ -16,21 +15,18 @@ const SettingsPage = () => {
         const nextRoleActive = !roleActive;
         setRoleActive(nextRoleActive);
         dispatch(setSettings({...settings, confirmChangeRole: nextRoleActive}));
-        // partiallySaveSettingsToLocalStorage({confirmChangeRole: nextRoleActive});
     }
 
     const handleChangeBan = () => {
         const nextBanActive = !banActive;
         setBanActive(nextBanActive);
         dispatch(setSettings({...settings, confirmChangeBanned: nextBanActive}));
-        // partiallySaveSettingsToLocalStorage({confirmChangeBanned: nextBanActive});
     }
 
     const handleChangeDelete = () => {
         const nextDelete = !deleteActive;
         setDeleteActive(nextDelete);
         dispatch(setSettings({...settings, confirmDeleteTodo: nextDelete}));
-        // partiallySaveSettingsToLocalStorage({confirmDeleteTodo: nextDelete});
     }
 
     return (
