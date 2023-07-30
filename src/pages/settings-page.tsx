@@ -10,7 +10,6 @@ const SettingsPage = () => {
     const [roleActive, setRoleActive] = useState(settings.confirmChangeRole);
     const [banActive, setBanActive] = useState(settings.confirmChangeBanned);
     const [deleteActive, setDeleteActive] = useState(settings.confirmDeleteTodo);
-    const [showOnlyMyTodos, setShowOnlyMyTodos] = useState(settings.showOnlyMyTodos);
     const [allowEditingCompleted, setAllowEditingCompleted] = useState(settings.allowEditingCompleted);
 
     // todo complex optimization with useCallback or better extract repeated logic
@@ -30,12 +29,6 @@ const SettingsPage = () => {
         const nextDelete = !deleteActive;
         setDeleteActive(nextDelete);
         dispatch(setSettings({...settings, confirmDeleteTodo: nextDelete}));
-    }
-
-    const handleChangeShowOnlyMy = () => {
-        const nextShowOnlyMy = !showOnlyMyTodos;
-        setShowOnlyMyTodos(nextShowOnlyMy);
-        dispatch(setSettings({...settings, showOnlyMyTodos: nextShowOnlyMy}));
     }
 
     const handleChangeAllowEditingCompleted = () => {
@@ -58,10 +51,6 @@ const SettingsPage = () => {
                 <li>
                     <span>Confirm before delete todo</span>
                     <Toggle active={deleteActive} setActive={handleChangeDelete} />
-                </li>
-                <li>
-                    <span>Show only my todos</span>
-                    <Toggle active={showOnlyMyTodos} setActive={handleChangeShowOnlyMy} />
                 </li>
                 <li>
                     <span>Allow editing completed</span>

@@ -87,6 +87,7 @@ const User: FC<UserProps> = ({user, onUpdate}) => {
 
     const handleIsBannedChange = (nextIsBanned: boolean) => {
         setIsBanned(nextIsBanned);
+        setPending(true);
         // todo make server handle ban requests as regular update
         axios.put(ApiUrl.banUser(user.id))
             .then(() => {

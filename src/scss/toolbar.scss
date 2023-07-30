@@ -1,6 +1,9 @@
 .toolbar {
   max-width: 400px;
   margin: 0 auto 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 
   .new-todo-btn {
     font-size: 1rem;

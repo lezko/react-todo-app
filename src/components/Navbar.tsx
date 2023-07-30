@@ -6,7 +6,7 @@ import {ConfigProvider, Dropdown} from 'antd';
 import {useAppDispatch} from 'store';
 import {logOut} from 'store/userSlice';
 import {useUser} from 'hooks/user';
-
+import language from 'language.json';
 
 const Navbar = () => {
     const dispatch = useAppDispatch();
@@ -20,48 +20,57 @@ const Navbar = () => {
     const logout = () => {
         window.localStorage.removeItem('jwt-token');
         dispatch(logOut());
-        setMenuOpened(false);
+        setMenuOpen(false);
         navigate('/sign-in');
     };
 
-    const [menuOpened, setMenuOpened] = useState(false);
+    const [menuOpen, setMenuOpen] = useState(false);
+    const setMenuOpenWithOverflow = (nextOpen: boolean) => {
+        document.documentElement.style.overflowY = nextOpen ? 'hidden' : 'visible';
+        setMenuOpen(nextOpen);
+    }
+
+    // todo resize listener & keep overflow in sync with menu open state and doc width
     const handleNavigate = () => {
-        setMenuOpened(false);
+        setMenuOpenWithOverflow(false);
     };
+
+    // todo language settings
+    const l = 'en';
+    const lang: {[key: string]: string} = language[l].navbar;
 
     const menuItems = [
         {
-            label: <NavLink onClick={handleNavigate}
-                            to="/profile">profile</NavLink>,
+            label: <NavLink onClick={handleNavigate} to="/profile">{lang.profile}</NavLink>,
             key: 0
         },
         {
-            label: <NavLink onClick={handleNavigate}
-                            to="/settings">settings</NavLink>,
+            label: <NavLink onClick={handleNavigate} to="/settings">{lang.settings}</NavLink>,
             key: 1
         },
         {
             label: <a href="/logout" className="logout" onClick={e => {
                 e.preventDefault();
                 logout();
-            }}><span>logout</span><FontAwesomeIcon className="icon" icon={faRightFromBracket} /></a>,
+            }}><span>{lang.logout}</span><FontAwesomeIcon className="icon" icon={faRightFromBracket} /></a>,
             key: 2
         }
     ];
+
     return (
         <>
             <div
-                onClick={() => setMenuOpened(prevState => !prevState)}
+                onClick={() => setMenuOpenWithOverflow(!menuOpen)}
                 className="menu-toggle"
             >
-                {menuOpened ? <FontAwesomeIcon icon={faXmark} /> : <FontAwesomeIcon icon={faBars} />}
+                {menuOpen ? <FontAwesomeIcon icon={faXmark} /> : <FontAwesomeIcon icon={faBars} />}
             </div>
-            <nav className={menuOpened ? 'active' : ''}>
+            <nav className={menuOpen ? 'active' : ''}>
                 <a className="home-link" href="/">Todo App</a>
                 <ul className="buttons">
                     {pages.map(p =>
                         <li key={p}>
-                            <NavLink onClick={handleNavigate} to={p}>{p}</NavLink>
+                            <NavLink onClick={handleNavigate} to={p}>{lang[p]}</NavLink>
                         </li>
                     )}
 
@@ -81,6 +90,7 @@ const Navbar = () => {
                                         overlayClassName="nav-dropdown"
                                         menu={{items: menuItems}}
                                         trigger={['click']}
+                                        onOpenChange={setMenuOpenWithOverflow}
                                     >
                                         <a onClick={e => e.preventDefault()}
                                            className="current-user">
@@ -97,10 +107,10 @@ const Navbar = () => {
                         :
                         <>
                             <li>
-                                <NavLink onClick={handleNavigate} to="/sign-up">sign up</NavLink>
+                                <NavLink onClick={handleNavigate} to="/sign-up">{lang.signUp}</NavLink>
                             </li>
                             <li>
-                                <NavLink onClick={handleNavigate} to="/sign-in">sign in</NavLink>
+                                <NavLink onClick={handleNavigate} to="/sign-in">{lang.signIn}</NavLink>
                             </li>
                         </>
                     }

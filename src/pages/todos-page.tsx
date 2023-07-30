@@ -10,6 +10,9 @@ import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
 import {faPlus} from '@fortawesome/free-solid-svg-icons';
 import {useSettings} from 'hooks/settings';
 import {useLoggedInUser} from 'hooks/user';
+import {setSettings} from 'store/settingsSlice';
+import {useAppDispatch} from 'store';
+import Toggle from 'components/Toggle';
 
 export type TodosContextType = { todos: ITodo[], setTodos: (todos: ITodo[]) => void };
 export const TodosContext = createContext<TodosContextType | null>(null);
@@ -72,6 +75,15 @@ const TodosPage = () => {
     const settings = useSettings();
     const user = useLoggedInUser();
 
+    const dispatch = useAppDispatch();
+    const [showOnlyMyTodos, setShowOnlyMyTodos] = useState(settings.showOnlyMyTodos);
+    const handleChangeShowOnlyMy = () => {
+        const nextShowOnlyMy = !showOnlyMyTodos;
+        setShowOnlyMyTodos(nextShowOnlyMy);
+        dispatch(setSettings({...settings, showOnlyMyTodos: nextShowOnlyMy}));
+    }
+
+
     return (
         <div className="main">
             {loading ?
@@ -108,6 +120,10 @@ const TodosPage = () => {
                                 <FontAwesomeIcon icon={faPlus} />
                                 <span>new todo</span>
                             </button>
+                            <div style={{display: 'flex', alignItems: 'center'}}>
+                                <span style={{marginRight: 10}}>Show only my todos</span>
+                                <Toggle active={showOnlyMyTodos} setActive={handleChangeShowOnlyMy} />
+                            </div>
                         </div>
                         <TodoList
                             todos={settings.showOnlyMyTodos ? todos.filter(t => user.user.id === t.creator.id) : todos}
