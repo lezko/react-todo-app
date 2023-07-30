@@ -20,7 +20,7 @@ const Navbar = () => {
     const logout = () => {
         window.localStorage.removeItem('jwt-token');
         dispatch(logOut());
-        setMenuOpen(false);
+        setMenuOpenWithOverflow(false);
         navigate('/sign-in');
     };
 
