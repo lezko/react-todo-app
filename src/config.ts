@@ -13,7 +13,7 @@ axios.interceptors.request.use(config => {
 });
 
 if (!getApiUrl()) {
-    setApiUrl('https://82.148.16.142:8080');
+    setApiUrl('https://45.131.41.247:8080');
 }
 
 export function getApiUrl() {
