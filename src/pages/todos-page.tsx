@@ -5,14 +5,15 @@ import axios from 'axios';
 import {ITodo} from 'models/ITodo';
 import Spinner from 'components/Spinner';
 import {ApiUrl} from 'api-url';
-import {Button, Modal} from 'antd';
+import {Button, ConfigProvider, Dropdown, Modal} from 'antd';
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
-import {faPlus} from '@fortawesome/free-solid-svg-icons';
+import {faPlus, faEllipsis} from '@fortawesome/free-solid-svg-icons';
 import {useSettings} from 'hooks/settings';
 import {useLoggedInUser} from 'hooks/user';
 import {setSettings} from 'store/settingsSlice';
 import {useAppDispatch} from 'store';
 import Toggle from 'components/Toggle';
+import Checkbox from 'components/Checkbox';
 
 export type TodosContextType = { todos: ITodo[], setTodos: (todos: ITodo[]) => void };
 export const TodosContext = createContext<TodosContextType | null>(null);
@@ -83,7 +84,6 @@ const TodosPage = () => {
         dispatch(setSettings({...settings, showOnlyMyTodos: nextShowOnlyMy}));
     }
 
-
     return (
         <div className="main">
             {loading ?
@@ -120,10 +120,29 @@ const TodosPage = () => {
                                 <FontAwesomeIcon icon={faPlus} />
                                 <span>new todo</span>
                             </button>
-                            <div style={{display: 'flex', alignItems: 'center'}}>
-                                <span style={{marginRight: 10}}>Show only my todos</span>
-                                <Toggle active={showOnlyMyTodos} setActive={handleChangeShowOnlyMy} />
-                            </div>
+                            <ConfigProvider theme={{token: {colorBgElevated: '#2c273d', motionDurationMid: '0'}}}>
+                                <Dropdown
+                                    menu={{
+                                        items: [{
+                                            label: <div
+                                                style={{display: 'flex', alignItems: 'center'}}
+                                                onClick={e => {
+                                                    handleChangeShowOnlyMy();
+                                                }}
+                                            >
+                                                <Checkbox checked={showOnlyMyTodos} setChecked={() => {}} />
+                                                <span style={{marginLeft: 10}}>Show only my todos</span>
+                                            </div>,
+                                            key: 0
+                                        },
+                                        ]}}
+                                    trigger={['click']}
+                                    placement="bottomRight"
+                                    overlayClassName="toolbar-menu"
+                                >
+                                    <FontAwesomeIcon cursor="pointer" fontSize="1.5rem" icon={faEllipsis} />
+                                </Dropdown>
+                            </ConfigProvider>
                         </div>
                         <TodoList
                             todos={settings.showOnlyMyTodos ? todos.filter(t => user.user.id === t.creator.id) : todos}

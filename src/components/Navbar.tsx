@@ -22,6 +22,7 @@ const Navbar = () => {
         dispatch(logOut());
         setMenuOpenWithOverflow(false);
         navigate('/sign-in');
+        navigate('/sign-in');
     };
 
     const [menuOpen, setMenuOpen] = useState(false);
@@ -80,17 +81,21 @@ const Navbar = () => {
                             <li className="user-logout-btn">
                                 <ConfigProvider theme={{
                                     token: {
+                                        colorBgElevated: 'rgb(102, 21, 95)',
                                         borderRadius: 0,
                                         colorBgBase: 'rgb(102, 21, 95)',
                                         colorText: '7E8098FF',
                                         controlItemBgHover: 'rgb(102, 21, 95)',
                                     }
                                 }}>
+
                                     <Dropdown
                                         overlayClassName="nav-dropdown"
                                         menu={{items: menuItems}}
                                         trigger={['click']}
                                         onOpenChange={setMenuOpenWithOverflow}
+                                        // todo very strange bug - without line below dropdown appears off screen on the top when page scrolled to bottom
+                                        placement="top"
                                     >
                                         <a onClick={e => e.preventDefault()}
                                            className="current-user">

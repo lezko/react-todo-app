@@ -45,7 +45,10 @@ const UsersPage = () => {
 
     return (
         <div>
-            <UserList users={users} setUsers={setUsers} />
+            <UserList
+                users={users}
+                setUsers={setUsers}
+            />
         </div>
     );
 };

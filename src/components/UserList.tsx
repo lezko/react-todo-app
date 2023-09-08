@@ -24,6 +24,7 @@ const UserList: FC<UserListProps> = ({users, setUsers}) => {
             dispatch(logInSuccess({...loggedInUser, ...user}));
         }
     };
+
     return (
         <ul className="user-list">
             {users.map(u =>
