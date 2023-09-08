@@ -18,7 +18,7 @@ const User: FC<UserProps> = ({user, onUpdate}) => {
     const {user: loggedInUser} = useLoggedInUser();
 
     const [color, setColor] = useState(user.color);
-    const [isAdmin, setIsAdmin] = useState(user.role === 'ROLE_ADMIN');
+    const [isAdmin, setIsAdmin] = useState(user.role === UserRole.Admin);
     const [isBanned, setIsBanned] = useState(user.isInBan);
 
     const [pending, setPending] = useState(false);
@@ -47,7 +47,7 @@ const User: FC<UserProps> = ({user, onUpdate}) => {
             }
             confirm({
                 title: 'Confirmation',
-                content: user.role === 'ROLE_ADMIN' ?
+                content: user.role === UserRole.Admin ?
                     <p>You are revoking admin privileges from user <i>{user.login}</i></p> :
                     <p>You are granting admin privileges to user <i>{user.login}</i></p>,
                 okType: 'default',
@@ -130,22 +130,22 @@ const User: FC<UserProps> = ({user, onUpdate}) => {
             {contextHolder}
             <span style={{color: user.color}} className="user__name">{user.login}</span>
             {' '}
-            {loggedInUser.role === 'ROLE_ADMIN' ?
+            {loggedInUser.role === UserRole.Admin ?
                 <>
-                    <div
-                        className="picker"
-                        style={{pointerEvents: pending ? 'none' : 'auto'}}
-                        onClick={() => {
-                            if (!pending) {
-                                // todo get rid of '!'
-                                colorInputRef.current!.click();
-                            }
-                        }}
-                    >
-                        <input ref={colorInputRef} value={color} onChange={handleColorChange}
-                               type="color" />
-                        <FontAwesomeIcon className="brush" icon={faEyedropper} />
-                    </div>
+                    {/*<div*/}
+                    {/*    className="picker"*/}
+                    {/*    style={{pointerEvents: pending ? 'none' : 'auto'}}*/}
+                    {/*    onClick={() => {*/}
+                    {/*        if (!pending) {*/}
+                    {/*            // todo get rid of '!'*/}
+                    {/*            colorInputRef.current!.click();*/}
+                    {/*        }*/}
+                    {/*    }}*/}
+                    {/*>*/}
+                    {/*    <input ref={colorInputRef} value={color} onChange={handleColorChange}*/}
+                    {/*           type="color" />*/}
+                    {/*    <FontAwesomeIcon className="brush" icon={faEyedropper} />*/}
+                    {/*</div>*/}
                     {color !== user.color && !pending &&
                         <div className="color-buttons">
                             <FontAwesomeIcon className="btn ok" onClick={() => confirmUpdate({color})} icon={faCheck} />
@@ -174,7 +174,7 @@ const User: FC<UserProps> = ({user, onUpdate}) => {
                 </>
                 :
                 <>
-                    {user.role === 'ROLE_ADMIN' &&
+                    {user.role === UserRole.Admin &&
                         <span style={{color: user.color}} className="star"><FontAwesomeIcon icon={faStar} /></span>}
                     {user.isInBan && <FontAwesomeIcon className="ban-icon" icon={faBan} />}
                 </>

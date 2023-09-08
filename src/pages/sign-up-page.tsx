@@ -36,11 +36,7 @@ const SignUpPage = () => {
             password: data.password
         }))
             .then(res => {
-                // todo make server respond with token, not jwt-token
-                const userData = Object.assign({}, res.data);
-                userData.token = res.data['jwt-token'];
-                delete userData['jwt-token'];
-                dispatch(logInSuccess(userData));
+                dispatch(logInSuccess(res.data));
                 setError('');
             })
             .catch(e => {

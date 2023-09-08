@@ -7,6 +7,7 @@ import {useAppDispatch} from 'store';
 import {logOut} from 'store/userSlice';
 import {useUser} from 'hooks/user';
 import language from 'language.json';
+import {UserRole} from 'models/IUser';
 
 const Navbar = () => {
     const dispatch = useAppDispatch();
@@ -101,7 +102,7 @@ const Navbar = () => {
                                            className="current-user">
                                             <FontAwesomeIcon className="mobile-only profile-icon" icon={faCircleUser} />
                                             <span style={{color: user.color}}>{user.login}</span>
-                                            {user.role === 'ROLE_ADMIN' &&
+                                            {user.role === UserRole.Admin &&
                                                 <FontAwesomeIcon style={{color: user.color}} className="star"
                                                                  icon={faStar} />}
                                         </a>

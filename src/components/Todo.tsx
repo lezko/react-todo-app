@@ -6,18 +6,20 @@ import useModal from 'antd/es/modal/useModal';
 import Toggle from 'components/Toggle';
 import Checkbox from 'components/Checkbox';
 import Spinner from 'components/Spinner';
-import {useAppSelector} from 'store';
 import {ITodo} from 'models/ITodo';
 import axios from 'axios';
 import {useSettings} from 'hooks/settings';
 import {ApiUrl} from 'api-url';
+import {useLoggedInUser} from 'hooks/user';
+import {Privilege} from 'models/IUserTodoRelation';
+import {UserRole} from 'models/IUser';
 
 interface TodoProps {
     todo: ITodo;
 }
 
 const Todo: FC<TodoProps> = ({todo}) => {
-    const {user} = useAppSelector(state => state.user);
+    const {user} = useLoggedInUser();
 
     const {todos, setTodos} = useContext(TodosContext) as TodosContextType;
     const [status, setStatus] = useState('default');
@@ -122,6 +124,18 @@ const Todo: FC<TodoProps> = ({todo}) => {
         });
     };
 
+    let creator;
+    for (const r of todo.users) {
+        if (r.privilege === Privilege.Creator) {
+            creator = r.user;
+            break;
+        }
+    }
+    if (!creator) {
+        throw new Error('Got todo without creator');
+    }
+    const isUserCreator = creator.login === user.login;
+
     const getTodoInfoHtml = () => {
         if (status === 'default') {
             return (<>
@@ -151,7 +165,7 @@ const Todo: FC<TodoProps> = ({todo}) => {
 
     const getButtonsHtml = () => {
         if (status === 'default') {
-            if (user !== null && +user.id === +todo.creator.id) {
+            if (isUserCreator) {
                 return (
                     <div className="todo__buttons">
                         <button disabled={pending} onClick={() => {
@@ -202,7 +216,7 @@ const Todo: FC<TodoProps> = ({todo}) => {
 
             {status === 'default' &&
                 <Checkbox
-                    disabled={user !== null && +user.id !== +todo.creator.id}
+                    disabled={!isUserCreator}
                     title={editData.isCompleted ? 'unmark completed' : 'mark completed'}
                     className="todo__checkbox"
                     checked={editData.isCompleted}
@@ -212,9 +226,9 @@ const Todo: FC<TodoProps> = ({todo}) => {
             {getTodoInfoHtml()}
             <div
                 className="todo__author"
-                style={{color: todo.creator.color}}
+                style={{color: creator.color}}
             >
-                {todo.creator.login} {todo.creator.role === 'ROLE_ADMIN' && <FontAwesomeIcon icon={faStar} />}
+                {creator.login}  {creator.role === UserRole.Admin && <FontAwesomeIcon icon={faStar} />}
             </div>
 
             {getButtonsHtml()}

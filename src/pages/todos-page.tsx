@@ -7,13 +7,13 @@ import Spinner from 'components/Spinner';
 import {ApiUrl} from 'api-url';
 import {Button, ConfigProvider, Dropdown, Modal} from 'antd';
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
-import {faPlus, faEllipsis} from '@fortawesome/free-solid-svg-icons';
+import {faEllipsis, faPlus} from '@fortawesome/free-solid-svg-icons';
 import {useSettings} from 'hooks/settings';
 import {useLoggedInUser} from 'hooks/user';
 import {setSettings} from 'store/settingsSlice';
 import {useAppDispatch} from 'store';
-import Toggle from 'components/Toggle';
 import Checkbox from 'components/Checkbox';
+import {getTodoCreator} from 'helpers/todoHelpers';
 
 export type TodosContextType = { todos: ITodo[], setTodos: (todos: ITodo[]) => void };
 export const TodosContext = createContext<TodosContextType | null>(null);
@@ -82,8 +82,9 @@ const TodosPage = () => {
         const nextShowOnlyMy = !showOnlyMyTodos;
         setShowOnlyMyTodos(nextShowOnlyMy);
         dispatch(setSettings({...settings, showOnlyMyTodos: nextShowOnlyMy}));
-    }
+    };
 
+    const [searchStr, setSearchStr] = useState('');
     return (
         <div className="main">
             {loading ?
@@ -126,16 +127,18 @@ const TodosPage = () => {
                                         items: [{
                                             label: <div
                                                 style={{display: 'flex', alignItems: 'center'}}
-                                                onClick={e => {
+                                                onClick={() => {
                                                     handleChangeShowOnlyMy();
                                                 }}
                                             >
-                                                <Checkbox checked={showOnlyMyTodos} setChecked={() => {}} />
+                                                <Checkbox checked={showOnlyMyTodos} setChecked={() => {
+                                                }} />
                                                 <span style={{marginLeft: 10}}>Show only my todos</span>
                                             </div>,
                                             key: 0
                                         },
-                                        ]}}
+                                        ]
+                                    }}
                                     trigger={['click']}
                                     placement="bottomRight"
                                     overlayClassName="toolbar-menu"
@@ -144,8 +147,13 @@ const TodosPage = () => {
                                 </Dropdown>
                             </ConfigProvider>
                         </div>
+                        <div className="container">
+                            <input style={{marginBottom: 20}} type="text" placeholder="Search..." value={searchStr}
+                                   onChange={e => setSearchStr(e.target.value)} />
+                        </div>
                         <TodoList
-                            todos={settings.showOnlyMyTodos ? todos.filter(t => user.user.id === t.creator.id) : todos}
+                            q={searchStr}
+                            todos={settings.showOnlyMyTodos ? todos.filter(t => user.user.id === getTodoCreator(t).id) : todos}
                         />
                     </TodosContext.Provider>
             }

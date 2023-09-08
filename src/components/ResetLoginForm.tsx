@@ -21,11 +21,7 @@ const ResetLoginForm = () => {
         setStatus('pending');
         axios.put(ApiUrl.resetLogin(user.id), JSON.stringify({login}))
             .then(res => {
-                // todo make server respond with token, not jwt-token
-                const userData = Object.assign({}, res.data);
-                userData.token = res.data['jwt-token'];
-                delete userData['jwt-token'];
-                dispatch(logInSuccess({...user, login, ...userData}));
+                dispatch(logInSuccess({...user, login, ...res}));
                 setError('');
             })
             .catch(e => {
