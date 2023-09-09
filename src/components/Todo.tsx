@@ -1,7 +1,7 @@
 import {createRef, FC, RefObject, useCallback, useContext, useState} from 'react';
 import {TodosContext, TodosContextType} from 'pages/todos-page';
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
-import {faCheck, faEdit, faStar, faTrash, faXmark} from '@fortawesome/free-solid-svg-icons';
+import {faCheck, faEdit, faTrash, faUserPlus, faXmark} from '@fortawesome/free-solid-svg-icons';
 import useModal from 'antd/es/modal/useModal';
 import Toggle from 'components/Toggle';
 import Checkbox from 'components/Checkbox';
@@ -11,8 +11,9 @@ import axios from 'axios';
 import {useSettings} from 'hooks/settings';
 import {ApiUrl} from 'api-url';
 import {useLoggedInUser} from 'hooks/user';
-import {Privilege} from 'models/IUserTodoRelation';
-import {UserRole} from 'models/IUser';
+import {UserPrivilege} from 'models/IUserTodoRelation';
+import {AutoComplete, Modal} from 'antd';
+import {useUserList} from 'hooks/userList';
 
 interface TodoProps {
     todo: ITodo;
@@ -78,26 +79,22 @@ const Todo: FC<TodoProps> = ({todo}) => {
     };
 
     const confirmUpdate = (updatedData: any) => {
-        if (!editData.title) {
+        if (typeof updatedData.title === 'string' && updatedData.title.length === 0) {
             setError('Title must not be empty');
             return;
         }
-        if (hasDesc && !editData.description) {
+        if (typeof updatedData.description === 'string' && updatedData.description.length === 0) {
             setError('Description must not be empty');
             return;
         }
 
         setError('');
         setPending(true);
-        axios.put(ApiUrl.updateTodo(todo.id), JSON.stringify({
-            title: updatedData.title,
-            description: updatedData.description,
-            isCompleted: updatedData.isCompleted
-        }))
+        axios.put(ApiUrl.updateTodo(todo.id), JSON.stringify(updatedData))
             .then(() => {
                 setError('');
                 updateCurrentTodo(updatedData);
-                setEditData(updatedData);
+                setEditData({...editData, ...updatedData});
                 setStatus('default');
             })
             .catch(e => {
@@ -124,17 +121,23 @@ const Todo: FC<TodoProps> = ({todo}) => {
         });
     };
 
-    let creator;
+    let creator, userPrivilege = UserPrivilege.Reader, relationFound = false;
     for (const r of todo.users) {
-        if (r.privilege === Privilege.Creator) {
-            creator = r.user;
+        // if (r.privilege === Privilege.Creator) {
+        //     creator = r.user;
+        // }
+        if (r.user.id === user.id) {
+            userPrivilege = r.privilege;
+            relationFound = true;
             break;
         }
     }
-    if (!creator) {
-        throw new Error('Got todo without creator');
+    // if (!creator) {
+    //     throw new Error('Got todo without creator');
+    // }
+    if (!relationFound) {
+        throw new Error(`Current user (id: ${user.id}) is not related to todo with id ${todo.id}`);
     }
-    const isUserCreator = creator.login === user.login;
 
     const getTodoInfoHtml = () => {
         if (status === 'default') {
@@ -163,42 +166,134 @@ const Todo: FC<TodoProps> = ({todo}) => {
         );
     };
 
+    const userList = useUserList();
+    const [addUserModalOpen, setAddUserModalOpen] = useState(false);
+    const [userSearchOptions, setUserSearchOptions] = useState<{ value: string }[]>([]);
+    const [userSearchStr, setUserSearchStr] = useState('');
+    const [privilege, setPrivilege] = useState<UserPrivilege.Owner | UserPrivilege.Moderator | UserPrivilege.Reader>(UserPrivilege.Reader);
+    const [addUserError, setAddUserError] = useState('');
+
+    function closeAddUserModal() {
+        setUserSearchStr('');
+        setAddUserError('');
+        setPrivilege(UserPrivilege.Reader);
+        setUserSearchOptions([]);
+        setAddUserModalOpen(false);
+    }
+
+    function handleAddUser() {
+        if (!userList.users.includes(userSearchStr)) {
+            setAddUserError('Invalid user name');
+            return;
+        }
+        setAddUserError('');
+        axios.put(ApiUrl.sendTodoRequest(todo.id), {
+            login: userSearchStr,
+            privilege
+        }).then(() => {
+            closeAddUserModal();
+        }).catch((e: any) => {
+            if (axios.isAxiosError(e)) {
+                setError(e.response?.data.message);
+            } else {
+                setError(e.message);
+            }
+        });
+    }
+
+    function getMatchingUsers(users: string[], q: string) {
+        if (!q) {
+            return [];
+        }
+        return users.filter(u => u.toLowerCase().includes(q.toLowerCase()));
+    }
+
+    const privilegesOptions: UserPrivilege[] = [UserPrivilege.Reader, UserPrivilege.Moderator];
+    if (userPrivilege === UserPrivilege.Creator) {
+        privilegesOptions.push(UserPrivilege.Owner);
+    }
+
     const getButtonsHtml = () => {
         if (status === 'default') {
-            if (isUserCreator) {
+            if (userPrivilege === UserPrivilege.Creator || userPrivilege === UserPrivilege.Owner || userPrivilege === UserPrivilege.Moderator) {
                 return (
                     <div className="todo__buttons">
-                        <button disabled={pending} onClick={() => {
-                            if (!settings.confirmDeleteTodo) {
-                                deleteTodo();
-                                return;
-                            }
-                            confirm({
-                                title: 'Confirmation',
-                                content: 'Sure you want to delete this todo?',
-                                okType: 'default',
-                                onOk: () => {
+                        {userPrivilege !== UserPrivilege.Moderator &&
+                            <button disabled={pending} onClick={() => {
+                                if (!settings.confirmDeleteTodo) {
                                     deleteTodo();
-                                },
-                                closable: true,
-                            });
-                        }}><FontAwesomeIcon icon={faTrash} />
-                        </button>
+                                    return;
+                                }
+                                confirm({
+                                    title: 'Confirmation',
+                                    content: 'Sure you want to delete this todo?',
+                                    okType: 'default',
+                                    onOk: () => {
+                                        deleteTodo();
+                                    },
+                                    closable: true,
+                                });
+                            }}><FontAwesomeIcon icon={faTrash} />
+                            </button>
+                        }
                         {(!editData.isCompleted || settings.allowEditingCompleted) &&
                             <button disabled={pending} onClick={startUpdate}><FontAwesomeIcon icon={faEdit} /></button>}
+                        <Modal
+                            open={addUserModalOpen}
+                            closable
+                            onCancel={closeAddUserModal}
+                            okButtonProps={{type: 'default'}}
+                            onOk={handleAddUser}
+                        >
+                            <>
+                                <h3 style={{marginBottom: 5, fontSize: '1.3rem'}}>Add user:</h3>
+                                <AutoComplete
+                                    value={userSearchStr}
+                                    onChange={data => setUserSearchStr(data)}
+                                    options={userSearchOptions}
+                                    onSearch={text => setUserSearchOptions(getMatchingUsers(userList.users, text).map(s => ({value: s})))}
+                                    onSelect={text => setUserSearchOptions(getMatchingUsers(userList.users, text).map(s => ({value: s})))}
+                                    style={{width: '100%'}}
+                                />
+                                <select style={{marginTop: 10}} value={privilege} onChange={e => {
+                                    const v = e.target.value;
+                                    const nextPrivilege = v === 'OWNER' ? UserPrivilege.Owner : v === 'MODERATOR' ? UserPrivilege.Moderator : UserPrivilege.Reader;
+                                    setPrivilege(nextPrivilege);
+                                }}>
+                                    {privilegesOptions.map(o =>
+                                        <option value={o}>{o}</option>
+                                    )}
+                                    {/*<option value={UserPrivilege.Owner}>{UserPrivilege.Owner}</option>*/}
+                                    {/*<option value={UserPrivilege.Moderator}>{UserPrivilege.Moderator}</option>*/}
+                                    {/*<option value={UserPrivilege.Reader}>{UserPrivilege.Reader}</option>*/}
+                                </select>
+                                <div style={{marginBlock: 5, color: 'red'}} className="error">{addUserError}</div>
+                            </>
+                        </Modal>
+                        {userPrivilege !== UserPrivilege.Moderator &&
+                            <button onClick={() => setAddUserModalOpen(true)}><FontAwesomeIcon icon={faUserPlus} /></button>
+                        }
                     </div>
                 );
             }
             return null;
         }
 
+        let changedData = {};
+        if (todo.title !== editData.title) {
+            changedData = {...changedData, title: editData.title};
+        }
+        const newDescription = hasDesc ? editData.description : '';
+        if (todo.description !== newDescription) {
+            changedData = {...changedData, description: newDescription};
+        }
+
         return (
             <div className="todo__buttons">
                 <button disabled={pending} onClick={cancelUpdate}><FontAwesomeIcon icon={faXmark} /></button>
-                {(todo.title !== editData.title ||
-                        todo.description !== (hasDesc ? editData.description : '')) &&
+                {Object.keys(changedData).length > 0 &&
                     <button disabled={pending} onClick={() => {
-                        confirmUpdate({...editData, description: hasDesc ? editData.description : ''});
+                        confirmUpdate(changedData);
                     }}><FontAwesomeIcon icon={faCheck} /></button>
                 }
             </div>
@@ -206,8 +301,8 @@ const Todo: FC<TodoProps> = ({todo}) => {
     };
 
     const handleChangeCompleted = useCallback((nextCompleted: boolean) => {
-        confirmUpdate({...editData, isCompleted: nextCompleted});
-    }, [editData]);
+        confirmUpdate({isCompleted: nextCompleted});
+    }, []);
 
     return (
         <div className={'todo ' + (status === 'edit' ? 'edit' : '')}>
@@ -216,7 +311,7 @@ const Todo: FC<TodoProps> = ({todo}) => {
 
             {status === 'default' &&
                 <Checkbox
-                    disabled={!isUserCreator}
+                    disabled={userPrivilege === UserPrivilege.Moderator || userPrivilege === UserPrivilege.Reader}
                     title={editData.isCompleted ? 'unmark completed' : 'mark completed'}
                     className="todo__checkbox"
                     checked={editData.isCompleted}
@@ -226,9 +321,9 @@ const Todo: FC<TodoProps> = ({todo}) => {
             {getTodoInfoHtml()}
             <div
                 className="todo__author"
-                style={{color: creator.color}}
             >
-                {creator.login}  {creator.role === UserRole.Admin && <FontAwesomeIcon icon={faStar} />}
+                <ul>{todo.users.map(u => u.user.login).join(', ')}</ul>
+                {/*{creator.login} {creator.role === UserRole.Admin && <FontAwesomeIcon icon={faStar} />}*/}
             </div>
 
             {getButtonsHtml()}

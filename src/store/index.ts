@@ -1,12 +1,16 @@
 import {configureStore} from '@reduxjs/toolkit';
 import userReducer from 'store/userSlice';
+import userListReducer from 'store/userListSlice';
 import settingsReducer from 'store/settingsSlice';
+import refreshTodoReducer from 'store/refreshTodoSlice';
 import {TypedUseSelectorHook, useDispatch, useSelector} from 'react-redux';
 
 export const store = configureStore({
     reducer: {
         user: userReducer,
-        settings: settingsReducer
+        userList: userListReducer,
+        settings: settingsReducer,
+        refreshTodo: refreshTodoReducer,
     }
 });
 

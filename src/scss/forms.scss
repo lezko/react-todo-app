@@ -86,3 +86,14 @@ input[type="color"]::-webkit-color-swatch-wrapper {
 input[type="color"]::-webkit-color-swatch {
   border: none;
 }
+
+select, option {
+  background-color: $bg-input;
+  color: $light;
+  border-color: $light;
+  padding: 5px;
+}
+option {
+  padding: 5px !important;
+  display: inline-block;
+}

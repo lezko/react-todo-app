@@ -4,17 +4,26 @@ import {IUser} from 'models/IUser';
 import axios from 'axios';
 import Spinner from 'components/Spinner';
 import {ApiUrl} from 'api-url';
+import {useAppDispatch} from 'store';
+import {setUserList} from 'store/userListSlice';
+import {useLoggedInUser} from 'hooks/user';
 
 const UsersPage = () => {
     const [users, setUsers] = useState<IUser[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
+    const dispatch = useAppDispatch();
+    const {user} = useLoggedInUser();
     useEffect(() => {
         let ignore = false;
         axios.get(ApiUrl.getUsers())
             .then(res => {
                 if (!ignore) {
                     setUsers(res.data);
+                    dispatch(setUserList(res.data.reduce((arr: string[], u: any) => {
+                        arr.push(u.login);
+                        return arr;
+                    }, []).filter((u: string) => u !== user.login)));
                     setError('');
                 }
             })

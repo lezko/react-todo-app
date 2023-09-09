@@ -14,6 +14,9 @@ import {setSettings} from 'store/settingsSlice';
 import {useAppDispatch} from 'store';
 import Checkbox from 'components/Checkbox';
 import {getTodoCreator} from 'helpers/todoHelpers';
+import {setUserList} from 'store/userListSlice';
+import {useUserList} from 'hooks/userList';
+import {useRefreshTodo} from 'hooks/refreshTodo';
 
 export type TodosContextType = { todos: ITodo[], setTodos: (todos: ITodo[]) => void };
 export const TodosContext = createContext<TodosContextType | null>(null);
@@ -22,9 +25,71 @@ const TodosPage = () => {
     const [todos, setTodos] = useState<ITodo[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
+
+    const [limit, setLimit] = useState(10);
+    const [todosCount, setTodosCount] = useState(0);
+    const [page, setPage] = useState(1);
+    const pageCount = Math.ceil(todosCount / limit);
+    const pageButtonsCount = pageCount > 1 ? pageCount : 0;
+
     useEffect(() => {
         let ignore = false;
-        axios.get(ApiUrl.getTodos())
+        axios.get(ApiUrl.getTodosCount())
+            .then(res => {
+                if (!ignore) {
+                    setTodosCount(res.data.count);
+                }
+            })
+            .catch(e => {
+                if (!ignore) {
+                    setError(e.message);
+                }
+            })
+            .finally(() => setLoading(false));
+
+        return () => {
+            ignore = true;
+        };
+    }, []);
+
+    const settings = useSettings();
+    const {user} = useLoggedInUser();
+    const userList = useUserList();
+    useEffect(() => {
+        if (userList.users.length) {
+            return;
+        }
+        let ignore = false;
+        axios.get(ApiUrl.getUsers())
+            .then(res => {
+                if (!ignore) {
+                    dispatch(setUserList(res.data.reduce((arr: string[], u: any) => {
+                        arr.push(u.login);
+                        return arr;
+                    }, []).filter((u: string) => u !== user.login)));
+                    setError('');
+                }
+            })
+            .catch(e => {
+                if (!ignore) {
+                    if (axios.isAxiosError(e)) {
+                        setError(e.response?.data.message);
+                    } else {
+                        setError(e.message);
+                    }
+                }
+            })
+            .finally(() => setLoading(false));
+
+        return () => {
+            ignore = true;
+        };
+    }, []);
+
+    const {value: refreshValue} = useRefreshTodo();
+    useEffect(() => {
+        let ignore = false;
+        axios.get(ApiUrl.getTodos(page, limit))
             .then(res => {
                 if (!ignore) {
                     setTodos(res.data);
@@ -40,7 +105,7 @@ const TodosPage = () => {
         return () => {
             ignore = true;
         };
-    }, []);
+    }, [page, refreshValue]);
 
     const [newTodoModalOpen, setNewTodoModalOpen] = useState(false);
 
@@ -56,7 +121,7 @@ const TodosPage = () => {
         setPending(true);
         axios.post(ApiUrl.createTodo(), JSON.stringify(data))
             .then(res => {
-                setTodos([...todos, res.data]);
+                setTodos([res.data, ...todos]);
                 setNewTodoError('');
                 setData({title: '', description: ''});
                 setNewTodoModalOpen(false);
@@ -73,9 +138,6 @@ const TodosPage = () => {
             });
     };
 
-    const settings = useSettings();
-    const user = useLoggedInUser();
-
     const dispatch = useAppDispatch();
     const [showOnlyMyTodos, setShowOnlyMyTodos] = useState(settings.showOnlyMyTodos);
     const handleChangeShowOnlyMy = () => {
@@ -85,8 +147,26 @@ const TodosPage = () => {
     };
 
     const [searchStr, setSearchStr] = useState('');
+
+    function fetchWithSearch() {
+        setLoading(true);
+        axios.get(ApiUrl.getTodos(page, limit, searchStr))
+            .then(res => {
+                setError('');
+                setTodos(res.data);
+            })
+            .catch(e => {
+                if (axios.isAxiosError(e)) {
+                    setNewTodoError(e.response?.data.message);
+                } else {
+                    setNewTodoError(e.message);
+                }
+            })
+            .finally(() => setLoading(false));
+    }
+
     return (
-        <div className="main">
+        <div className="main todos-page">
             {loading ?
                 <div style={{textAlign: 'center'}}>loading todos <Spinner /></div> :
                 error
@@ -148,13 +228,23 @@ const TodosPage = () => {
                             </ConfigProvider>
                         </div>
                         <div className="container">
-                            <input style={{marginBottom: 20}} type="text" placeholder="Search..." value={searchStr}
-                                   onChange={e => setSearchStr(e.target.value)} />
+                            <div style={{display: 'flex', marginBottom: 20}}>
+                                <input type="text" placeholder="Search..." value={searchStr}
+                                       onChange={e => setSearchStr(e.target.value)} />
+                                <button onClick={fetchWithSearch} style={{marginLeft: 10}}>OK</button>
+                            </div>
                         </div>
                         <TodoList
-                            q={searchStr}
-                            todos={settings.showOnlyMyTodos ? todos.filter(t => user.user.id === getTodoCreator(t).id) : todos}
+                            todos={settings.showOnlyMyTodos ? todos.filter(t => user.id === getTodoCreator(t).id) : todos}
                         />
+                        <div className="container">
+                            <ul className="page-btns">{Array(pageButtonsCount).fill(null).map((_, i) =>
+                                <li key={i}>
+                                    <button className={i + 1 === page ? 'active' : ''}
+                                            onClick={() => setPage(i + 1)}>{i + 1}</button>
+                                </li>
+                            )}</ul>
+                        </div>
                     </TodosContext.Provider>
             }
         </div>

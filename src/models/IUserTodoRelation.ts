@@ -1,6 +1,6 @@
 import {IUser} from 'models/IUser';
 
-export enum Privilege {
+export enum UserPrivilege {
     Creator = 'CREATOR',
     Owner = 'OWNER',
     Moderator = 'MODERATOR',
@@ -9,5 +9,5 @@ export enum Privilege {
 
 export interface IUserTodoRelation {
     user: IUser;
-    privilege: Privilege;
+    privilege: UserPrivilege;
 }
