@@ -31,8 +31,12 @@ export class ApiUrl {
         return url + '/todos' + params;
     }
 
-    static getTodosCount() {
-        return url + '/todos-count';
+    static getTodosCount(q?: string) {
+        let params = '';
+        if (typeof q === 'string' && q) {
+            params += '?q=' + q;
+        }
+        return url + '/todos-count' + params;
     }
 
     static sendTodoRequest(id: number) {

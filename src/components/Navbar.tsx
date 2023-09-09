@@ -162,8 +162,12 @@ const Navbar = () => {
                                             <ul>{requests.map(r =>
                                                 <li className="request" key={r.todoId}>
                                                     <div className="info">
-                                                        <span className="request__author">{r.userLogin} </span>
-                                                        invited you to become a/an
+                                                        {r.userLogin ?
+                                                            <>
+                                                                <span className="request__author">{r.userLogin} </span>
+                                                                has invited you to become a/an
+                                                            </> : 'You were invited to become a/an'
+                                                        }
                                                         <span className="request__privilege"> {r.userPrivilege.toLowerCase()} </span>{' '}
                                                         of a todo
                                                         <span className="request__title"> {r.todoTitle}</span>

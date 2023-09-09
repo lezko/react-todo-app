@@ -261,7 +261,7 @@ const Todo: FC<TodoProps> = ({todo}) => {
                                     setPrivilege(nextPrivilege);
                                 }}>
                                     {privilegesOptions.map(o =>
-                                        <option value={o}>{o}</option>
+                                        <option key={o} value={o}>{o}</option>
                                     )}
                                     {/*<option value={UserPrivilege.Owner}>{UserPrivilege.Owner}</option>*/}
                                     {/*<option value={UserPrivilege.Moderator}>{UserPrivilege.Moderator}</option>*/}

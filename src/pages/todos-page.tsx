@@ -32,6 +32,8 @@ const TodosPage = () => {
     const pageCount = Math.ceil(todosCount / limit);
     const pageButtonsCount = pageCount > 1 ? pageCount : 0;
 
+    const [searchStr, setSearchStr] = useState('');
+
     useEffect(() => {
         let ignore = false;
         axios.get(ApiUrl.getTodosCount())
@@ -87,25 +89,21 @@ const TodosPage = () => {
     }, []);
 
     const {value: refreshValue} = useRefreshTodo();
-    useEffect(() => {
-        let ignore = false;
-        axios.get(ApiUrl.getTodos(page, limit))
+
+    function fetchTodos() {
+        setLoading(true);
+        axios.get(ApiUrl.getTodos(page, limit, searchStr))
             .then(res => {
-                if (!ignore) {
-                    setTodos(res.data);
-                }
+                setTodos(res.data.sort((a: any, b: any) => a.id - b.id));
             })
             .catch(e => {
-                if (!ignore) {
-                    setError(e.message);
-                }
+                setError(e.message);
             })
             .finally(() => setLoading(false));
-
-        return () => {
-            ignore = true;
-        };
-    }, [page, refreshValue]);
+    }
+    useEffect(() => {
+        fetchTodos();
+    }, [refreshValue]);
 
     const [newTodoModalOpen, setNewTodoModalOpen] = useState(false);
 
@@ -146,11 +144,17 @@ const TodosPage = () => {
         dispatch(setSettings({...settings, showOnlyMyTodos: nextShowOnlyMy}));
     };
 
-    const [searchStr, setSearchStr] = useState('');
-
-    function fetchWithSearch() {
+    async function fetchWithSearch() {
         setLoading(true);
-        axios.get(ApiUrl.getTodos(page, limit, searchStr))
+        await axios.get(ApiUrl.getTodosCount(searchStr))
+            .then(res => {
+                setTodosCount(res.data.count);
+            })
+            .catch(e => {
+                setError(e.message);
+            });
+        setPage(1);
+        axios.get(ApiUrl.getTodos(1, limit, searchStr))
             .then(res => {
                 setError('');
                 setTodos(res.data);
@@ -241,7 +245,10 @@ const TodosPage = () => {
                             <ul className="page-btns">{Array(pageButtonsCount).fill(null).map((_, i) =>
                                 <li key={i}>
                                     <button className={i + 1 === page ? 'active' : ''}
-                                            onClick={() => setPage(i + 1)}>{i + 1}</button>
+                                            onClick={() => {
+                                                setPage(i + 1);
+                                                fetchTodos();
+                                            }}>{i + 1}</button>
                                 </li>
                             )}</ul>
                         </div>
