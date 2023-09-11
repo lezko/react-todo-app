@@ -25,7 +25,7 @@ export class ApiUrl {
         if (typeof limit === 'number') {
             params += '&limit=' + limit;
         }
-        if (typeof q === 'string') {
+        if (typeof q === 'string' && q.length) {
             params += '&q=' + q;
         }
         return url + '/todos' + params;
@@ -33,7 +33,7 @@ export class ApiUrl {
 
     static getTodosCount(q?: string) {
         let params = '';
-        if (typeof q === 'string' && q) {
+        if (typeof q === 'string' && q.length) {
             params += '?q=' + q;
         }
         return url + '/todos-count' + params;

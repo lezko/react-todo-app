@@ -5,14 +5,13 @@ import axios from 'axios';
 import {ITodo} from 'models/ITodo';
 import Spinner from 'components/Spinner';
 import {ApiUrl} from 'api-url';
-import {Button, ConfigProvider, Dropdown, Modal} from 'antd';
+import {Button, Modal} from 'antd';
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
-import {faEllipsis, faPlus, faXmark} from '@fortawesome/free-solid-svg-icons';
+import {faPlus, faXmark} from '@fortawesome/free-solid-svg-icons';
 import {useSettings} from 'hooks/settings';
 import {useLoggedInUser} from 'hooks/user';
 import {setSettings} from 'store/settingsSlice';
 import {useAppDispatch} from 'store';
-import Checkbox from 'components/Checkbox';
 import {getTodoCreator} from 'helpers/todoHelpers';
 import {setUserList} from 'store/userListSlice';
 import {useUserList} from 'hooks/userList';
@@ -34,26 +33,6 @@ const TodosPage = () => {
 
     const [searchStr, setSearchStr] = useState('');
     const [lastSearch, setLastSearch] = useState('');
-
-    useEffect(() => {
-        let ignore = false;
-        axios.get(ApiUrl.getTodosCount())
-            .then(res => {
-                if (!ignore) {
-                    setTodosCount(res.data.count);
-                }
-            })
-            .catch(e => {
-                if (!ignore) {
-                    setError(e.message);
-                }
-            })
-            .finally(() => setLoading(false));
-
-        return () => {
-            ignore = true;
-        };
-    }, []);
 
     const settings = useSettings();
     const {user} = useLoggedInUser();
@@ -91,19 +70,9 @@ const TodosPage = () => {
 
     const {value: refreshValue} = useRefreshTodo();
 
-    function fetchTodos() {
-        setLoading(true);
-        axios.get(ApiUrl.getTodos(page, limit, searchStr))
-            .then(res => {
-                setTodos(res.data.sort((a: any, b: any) => a.id - b.id));
-            })
-            .catch(e => {
-                setError(e.message);
-            })
-            .finally(() => setLoading(false));
-    }
     useEffect(() => {
-        fetchTodos();
+        const updateTotal = !todosCount;
+        fetchWithSearch(page, limit, searchStr, updateTotal);
     }, [refreshValue]);
 
     const [newTodoModalOpen, setNewTodoModalOpen] = useState(false);
@@ -145,22 +114,24 @@ const TodosPage = () => {
         dispatch(setSettings({...settings, showOnlyMyTodos: nextShowOnlyMy}));
     };
 
-    async function fetchWithSearch() {
+    async function fetchWithSearch(page: number, limit: number, searchStr: string, updateTotal: boolean) {
         setLoading(true);
-        await axios.get(ApiUrl.getTodosCount(searchStr))
-            .then(res => {
-                setTodosCount(res.data.count);
-            })
-            .catch(e => {
-                setError(e.message);
-            });
-        setPage(1);
-        axios.get(ApiUrl.getTodos(1, limit, searchStr))
+        if (updateTotal) {
+            await axios.get(ApiUrl.getTodosCount(searchStr))
+                .then(res => {
+                    setTodosCount(res.data.count);
+                })
+                .catch(e => {
+                    setError(e.message);
+                });
+            setPage(page);
+        }
+
+        axios.get(ApiUrl.getTodos(page, limit, searchStr))
             .then(res => {
                 setError('');
                 setTodos(res.data);
                 setSearchStr('');
-                console.log(searchStr);
                 setLastSearch(searchStr);
             })
             .catch(e => {
@@ -212,44 +183,21 @@ const TodosPage = () => {
                             <div>
                                 Total: {todosCount} todos
                             </div>
-                            {/*<ConfigProvider theme={{token: {colorBgElevated: '#2c273d', motionDurationMid: '0'}}}>*/}
-                            {/*    <Dropdown*/}
-                            {/*        menu={{*/}
-                            {/*            items: [{*/}
-                            {/*                label: <div*/}
-                            {/*                    style={{display: 'flex', alignItems: 'center'}}*/}
-                            {/*                    onClick={() => {*/}
-                            {/*                        handleChangeShowOnlyMy();*/}
-                            {/*                    }}*/}
-                            {/*                >*/}
-                            {/*                    <Checkbox checked={showOnlyMyTodos} setChecked={() => {*/}
-                            {/*                    }} />*/}
-                            {/*                    <span style={{marginLeft: 10}}>Show only my todos</span>*/}
-                            {/*                </div>,*/}
-                            {/*                key: 0*/}
-                            {/*            },*/}
-                            {/*            ]*/}
-                            {/*        }}*/}
-                            {/*        trigger={['click']}*/}
-                            {/*        placement="bottomRight"*/}
-                            {/*        overlayClassName="toolbar-menu"*/}
-                            {/*    >*/}
-                            {/*        <FontAwesomeIcon cursor="pointer" fontSize="1.5rem" icon={faEllipsis} />*/}
-                            {/*    </Dropdown>*/}
-                            {/*</ConfigProvider>*/}
                         </div>
                         <div className="container">
                             <div style={{display: 'flex', marginBottom: 20}}>
                                 <input type="text" placeholder="Search..." value={searchStr}
                                        onChange={e => setSearchStr(e.target.value)} />
-                                <button disabled={!searchStr} onClick={fetchWithSearch} style={{marginLeft: 10}}>OK</button>
+                                <button disabled={!searchStr} onClick={() => {
+                                    fetchWithSearch(1, limit, searchStr, true);
+                                }} style={{marginLeft: 10}}>OK</button>
                             </div>
                             {lastSearch &&
-                                <div style={{display: 'flex', alignItems: 'center'}}>
+                                <div style={{display: 'flex', alignItems: 'center', marginBottom: 15}}>
                                     <span style={{lineHeight: 1}}>Showing results for "<i>{lastSearch}</i>"</span>
                                     <FontAwesomeIcon style={{cursor: 'pointer', marginLeft: 10, width: 20, height: 20}} onClick={() => {
                                         setSearchStr('');
-                                        fetchWithSearch();
+                                        fetchWithSearch(1, limit, '', true);
                                     }} icon={faXmark} />
                                 </div>
                             }
@@ -263,7 +211,7 @@ const TodosPage = () => {
                                     <button className={i + 1 === page ? 'active' : ''}
                                             onClick={() => {
                                                 setPage(i + 1);
-                                                fetchTodos();
+                                                fetchWithSearch(i + 1, limit, lastSearch, false);
                                             }}>{i + 1}</button>
                                 </li>
                             )}</ul>
