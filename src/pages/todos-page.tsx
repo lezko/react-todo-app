@@ -7,7 +7,7 @@ import Spinner from 'components/Spinner';
 import {ApiUrl} from 'api-url';
 import {Button, ConfigProvider, Dropdown, Modal} from 'antd';
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
-import {faEllipsis, faPlus} from '@fortawesome/free-solid-svg-icons';
+import {faEllipsis, faPlus, faXmark} from '@fortawesome/free-solid-svg-icons';
 import {useSettings} from 'hooks/settings';
 import {useLoggedInUser} from 'hooks/user';
 import {setSettings} from 'store/settingsSlice';
@@ -33,6 +33,7 @@ const TodosPage = () => {
     const pageButtonsCount = pageCount > 1 ? pageCount : 0;
 
     const [searchStr, setSearchStr] = useState('');
+    const [lastSearch, setLastSearch] = useState('');
 
     useEffect(() => {
         let ignore = false;
@@ -158,6 +159,9 @@ const TodosPage = () => {
             .then(res => {
                 setError('');
                 setTodos(res.data);
+                setSearchStr('');
+                console.log(searchStr);
+                setLastSearch(searchStr);
             })
             .catch(e => {
                 if (axios.isAxiosError(e)) {
@@ -205,38 +209,50 @@ const TodosPage = () => {
                                 <FontAwesomeIcon icon={faPlus} />
                                 <span>new todo</span>
                             </button>
-                            <ConfigProvider theme={{token: {colorBgElevated: '#2c273d', motionDurationMid: '0'}}}>
-                                <Dropdown
-                                    menu={{
-                                        items: [{
-                                            label: <div
-                                                style={{display: 'flex', alignItems: 'center'}}
-                                                onClick={() => {
-                                                    handleChangeShowOnlyMy();
-                                                }}
-                                            >
-                                                <Checkbox checked={showOnlyMyTodos} setChecked={() => {
-                                                }} />
-                                                <span style={{marginLeft: 10}}>Show only my todos</span>
-                                            </div>,
-                                            key: 0
-                                        },
-                                        ]
-                                    }}
-                                    trigger={['click']}
-                                    placement="bottomRight"
-                                    overlayClassName="toolbar-menu"
-                                >
-                                    <FontAwesomeIcon cursor="pointer" fontSize="1.5rem" icon={faEllipsis} />
-                                </Dropdown>
-                            </ConfigProvider>
+                            <div>
+                                Total: {todosCount} todos
+                            </div>
+                            {/*<ConfigProvider theme={{token: {colorBgElevated: '#2c273d', motionDurationMid: '0'}}}>*/}
+                            {/*    <Dropdown*/}
+                            {/*        menu={{*/}
+                            {/*            items: [{*/}
+                            {/*                label: <div*/}
+                            {/*                    style={{display: 'flex', alignItems: 'center'}}*/}
+                            {/*                    onClick={() => {*/}
+                            {/*                        handleChangeShowOnlyMy();*/}
+                            {/*                    }}*/}
+                            {/*                >*/}
+                            {/*                    <Checkbox checked={showOnlyMyTodos} setChecked={() => {*/}
+                            {/*                    }} />*/}
+                            {/*                    <span style={{marginLeft: 10}}>Show only my todos</span>*/}
+                            {/*                </div>,*/}
+                            {/*                key: 0*/}
+                            {/*            },*/}
+                            {/*            ]*/}
+                            {/*        }}*/}
+                            {/*        trigger={['click']}*/}
+                            {/*        placement="bottomRight"*/}
+                            {/*        overlayClassName="toolbar-menu"*/}
+                            {/*    >*/}
+                            {/*        <FontAwesomeIcon cursor="pointer" fontSize="1.5rem" icon={faEllipsis} />*/}
+                            {/*    </Dropdown>*/}
+                            {/*</ConfigProvider>*/}
                         </div>
                         <div className="container">
                             <div style={{display: 'flex', marginBottom: 20}}>
                                 <input type="text" placeholder="Search..." value={searchStr}
                                        onChange={e => setSearchStr(e.target.value)} />
-                                <button onClick={fetchWithSearch} style={{marginLeft: 10}}>OK</button>
+                                <button disabled={!searchStr} onClick={fetchWithSearch} style={{marginLeft: 10}}>OK</button>
                             </div>
+                            {lastSearch &&
+                                <div style={{display: 'flex', alignItems: 'center'}}>
+                                    <span style={{lineHeight: 1}}>Showing results for "<i>{lastSearch}</i>"</span>
+                                    <FontAwesomeIcon style={{cursor: 'pointer', marginLeft: 10, width: 20, height: 20}} onClick={() => {
+                                        setSearchStr('');
+                                        fetchWithSearch();
+                                    }} icon={faXmark} />
+                                </div>
+                            }
                         </div>
                         <TodoList
                             todos={settings.showOnlyMyTodos ? todos.filter(t => user.id === getTodoCreator(t).id) : todos}

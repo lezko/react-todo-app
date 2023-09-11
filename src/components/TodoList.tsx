@@ -8,7 +8,7 @@ interface TodoListProps {
 
 const TodoList: FC<TodoListProps> = ({todos}) => {
     if (todos.length === 0) {
-        return <h3 style={{textAlign: 'center', marginTop: 40}}>No todos added yet</h3>;
+        return <h3 style={{textAlign: 'center', marginTop: 40}}>No todos found</h3>;
     }
 
     return (
