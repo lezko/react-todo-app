@@ -60,9 +60,7 @@ const TodosPage = () => {
                         setError(e.message);
                     }
                 }
-            })
-            .finally(() => setLoading(false));
-
+            });
         return () => {
             ignore = true;
         };
@@ -110,10 +108,11 @@ const TodosPage = () => {
 
     async function fetchWithSearch(page: number, limit: number, searchStr: string, updateTotal: boolean) {
         setLoading(true);
+        let receivedCount = 0;
         if (updateTotal) {
             await axios.get(ApiUrl.getTodosCount(searchStr))
                 .then(res => {
-                    setTodosCount(res.data.count);
+                    receivedCount = res.data.count;
                 })
                 .catch(e => {
                     setError(e.message);
@@ -124,6 +123,7 @@ const TodosPage = () => {
         axios.get(ApiUrl.getTodos(page, limit, searchStr))
             .then(res => {
                 setError('');
+                setTodosCount(receivedCount);
                 setTodos(res.data.sort((a: ITodo, b: ITodo) => b.id - a.id));
                 setSearchStr('');
                 setLastSearch(searchStr);
@@ -140,96 +140,98 @@ const TodosPage = () => {
 
     return (
         <div className="main todos-page">
-            {loading ?
-                <div style={{textAlign: 'center'}}>loading todos <Spinner /></div> :
-                error
-                    ? <div style={{color: 'red'}}>{error}</div> :
-                    <TodosContext.Provider value={{todos, setTodos}}>
-                        <Modal
-                            open={newTodoModalOpen}
-                            closable
-                            onCancel={() => setNewTodoModalOpen(false)}
-                            okButtonProps={{type: 'default'}}
-                            onOk={handleSubmit}
-                            // todo autofocus title input
-                            footer={<div style={{display: 'flex', alignItems: 'center', justifyContent: 'flex-end'}}>
-                                {pending ? <div style={{marginRight: 10}}><Spinner /></div> : null}
-                                <Button onClick={() => setNewTodoModalOpen(false)}>Cancel</Button>
-                                <Button onClick={handleSubmit}>OK</Button>
-                            </div>}
-                        >
-                            <>
-                                <NewTodoForm
-                                    error={newTodoError}
-                                    disabled={pending}
-                                    data={data}
-                                    setData={setData}
-                                    hasDescription={hasDescription}
-                                    setHasDescription={setHasDescription}
-                                />
-                            </>
-                        </Modal>
-                        <div className="toolbar">
-                            <button className="new-todo-btn" onClick={() => setNewTodoModalOpen(true)}>
-                                <FontAwesomeIcon icon={faPlus} />
-                                <span>new todo</span>
-                            </button>
-                            <div>
-                                Total: {todosCount} todos
-                            </div>
-                        </div>
-
-                        <div className="container">
-                            <div style={{display: 'flex', marginBottom: 20}}>
-                                <input
-                                    type="text"
-                                    placeholder="Search..."
-                                    value={searchStr}
-                                    onKeyDown={e => {
-                                        if (e.key === 'Enter') {
-                                            fetchWithSearch(1, limit, searchStr, true);
-                                        }
-                                    }}
-                                    onChange={e => {
-                                        setSearchStr(e.target.value);
-                                    }}
-                                />
-                                <button disabled={!searchStr} onClick={() => {
-                                    fetchWithSearch(1, limit, searchStr, true);
-                                }} style={{marginLeft: 10}}>OK
-                                </button>
-                            </div>
-                            {lastSearch &&
-                                <div style={{display: 'flex', alignItems: 'center', marginBottom: 15}}>
-                                    <span style={{lineHeight: 1}}>Showing results for "<i>{lastSearch}</i>"</span>
-                                    <FontAwesomeIcon
-                                        style={{cursor: 'pointer', marginLeft: 10, width: 20, height: 20}}
-                                        onClick={() => {
-                                            setSearchStr('');
-                                            fetchWithSearch(1, limit, '', true);
-                                        }} icon={faXmark} />
-                                </div>
-                            }
-                        </div>
-
-                        <TodoList
-                            todos={todos}
+            <TodosContext.Provider value={{todos, setTodos}}>
+                <Modal
+                    open={newTodoModalOpen}
+                    closable
+                    onCancel={() => setNewTodoModalOpen(false)}
+                    okButtonProps={{type: 'default'}}
+                    onOk={handleSubmit}
+                    // todo autofocus title input
+                    footer={<div style={{display: 'flex', alignItems: 'center', justifyContent: 'flex-end'}}>
+                        {pending ? <div style={{marginRight: 10}}><Spinner /></div> : null}
+                        <Button onClick={() => setNewTodoModalOpen(false)}>Cancel</Button>
+                        <Button onClick={handleSubmit}>OK</Button>
+                    </div>}
+                >
+                    <>
+                        <NewTodoForm
+                            error={newTodoError}
+                            disabled={pending}
+                            data={data}
+                            setData={setData}
+                            hasDescription={hasDescription}
+                            setHasDescription={setHasDescription}
                         />
-                        <div className="container">
-                            <ul className="page-btns">{Array(pageButtonsCount).fill(null).map((_, i) =>
-                                <li key={i}>
-                                    <button
-                                        className={i + 1 === page ? 'active' : ''}
-                                        onClick={() => {
-                                            setPage(i + 1);
-                                            fetchWithSearch(i + 1, limit, lastSearch, false);
-                                        }}>{i + 1}
-                                    </button>
-                                </li>
-                            )}</ul>
+                    </>
+                </Modal>
+                <div className="toolbar">
+                    <button className="new-todo-btn" onClick={() => setNewTodoModalOpen(true)}>
+                        <FontAwesomeIcon icon={faPlus} />
+                        <span>new todo</span>
+                    </button>
+                    <div>
+                        Total: {todosCount}
+                    </div>
+                </div>
+
+                <div className="container">
+                    <div style={{display: 'flex', marginBottom: 20}}>
+                        <input
+                            type="text"
+                            placeholder="Search..."
+                            value={searchStr}
+                            onKeyDown={e => {
+                                if (e.key === 'Enter') {
+                                    fetchWithSearch(1, limit, searchStr, true);
+                                }
+                            }}
+                            onChange={e => {
+                                setSearchStr(e.target.value);
+                            }}
+                        />
+                        <button disabled={!searchStr} onClick={() => {
+                            fetchWithSearch(1, limit, searchStr, true);
+                        }} style={{marginLeft: 10}}>OK
+                        </button>
+                    </div>
+                    {lastSearch &&
+                        <div style={{display: 'flex', alignItems: 'center', marginBottom: 15}}>
+                            <span style={{lineHeight: 1}}>Showing results for "<i>{lastSearch}</i>"</span>
+                            <FontAwesomeIcon
+                                style={{cursor: 'pointer', marginLeft: 10, width: 20, height: 20}}
+                                onClick={() => {
+                                    setSearchStr('');
+                                    fetchWithSearch(1, limit, '', true);
+                                }} icon={faXmark} />
                         </div>
-                    </TodosContext.Provider>
-            }
+                    }
+                </div>
+
+                {loading ?
+                    <div style={{textAlign: 'center', marginTop: 40}}>loading todos <Spinner /></div> :
+                    error
+                        ? <div style={{color: 'red'}}>{error}</div> :
+                        <>
+                            <TodoList
+                                todos={todos}
+                            />
+                            <div className="container">
+                                <ul className="page-btns">{Array(pageButtonsCount).fill(null).map((_, i) =>
+                                    <li key={i}>
+                                        <button
+                                            className={i + 1 === page ? 'active' : ''}
+                                            onClick={() => {
+                                                setPage(i + 1);
+                                                fetchWithSearch(i + 1, limit, lastSearch, false);
+                                            }}>{i + 1}
+                                        </button>
+                                    </li>
+                                )}</ul>
+                            </div>
+                        </>
+                }
+            </TodosContext.Provider>
         </div>
     );
 };
