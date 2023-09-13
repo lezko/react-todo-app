@@ -15,8 +15,14 @@
 @import "toggle";
 @import "checkbox";
 @import "reset-form";
+@import "toolbar";
+@import "todos-page";
 
 @import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,400;0,700;1,400;1,700&display=swap');
+html {
+  overflow-x: hidden;
+  margin-right: calc(-1 * (100vw - 100%));
+}
 
 html, body {
   min-height: 100vh;
@@ -39,6 +45,7 @@ code {
 
 .app {
   .mobile-only {display: none}
+  padding-bottom: 20px;
   @media (max-width: 470px) {
     padding: 60px 15px 15px;
     .mobile-only {display: block}

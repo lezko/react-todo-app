@@ -7,30 +7,34 @@ import {setSettings} from 'store/settingsSlice';
 const SettingsPage = () => {
     const dispatch = useAppDispatch();
     const settings = useSettings();
-    console.log(settings);
     const [roleActive, setRoleActive] = useState(settings.confirmChangeRole);
     const [banActive, setBanActive] = useState(settings.confirmChangeBanned);
     const [deleteActive, setDeleteActive] = useState(settings.confirmDeleteTodo);
+    const [allowEditingCompleted, setAllowEditingCompleted] = useState(settings.allowEditingCompleted);
 
+    // todo complex optimization with useCallback or better extract repeated logic
     const handeChangeRole = () => {
         const nextRoleActive = !roleActive;
         setRoleActive(nextRoleActive);
         dispatch(setSettings({...settings, confirmChangeRole: nextRoleActive}));
-        // partiallySaveSettingsToLocalStorage({confirmChangeRole: nextRoleActive});
     }
 
     const handleChangeBan = () => {
         const nextBanActive = !banActive;
         setBanActive(nextBanActive);
         dispatch(setSettings({...settings, confirmChangeBanned: nextBanActive}));
-        // partiallySaveSettingsToLocalStorage({confirmChangeBanned: nextBanActive});
     }
 
     const handleChangeDelete = () => {
         const nextDelete = !deleteActive;
         setDeleteActive(nextDelete);
         dispatch(setSettings({...settings, confirmDeleteTodo: nextDelete}));
-        // partiallySaveSettingsToLocalStorage({confirmDeleteTodo: nextDelete});
+    }
+
+    const handleChangeAllowEditingCompleted = () => {
+        const nextAllowEditingCompleted = !allowEditingCompleted;
+        setAllowEditingCompleted(nextAllowEditingCompleted);
+        dispatch(setSettings({...settings, allowEditingCompleted: nextAllowEditingCompleted}));
     }
 
     return (
@@ -47,6 +51,10 @@ const SettingsPage = () => {
                 <li>
                     <span>Confirm before delete todo</span>
                     <Toggle active={deleteActive} setActive={handleChangeDelete} />
+                </li>
+                <li>
+                    <span>Allow editing completed</span>
+                    <Toggle active={allowEditingCompleted} setActive={handleChangeAllowEditingCompleted} />
                 </li>
             </ul>
         </div>

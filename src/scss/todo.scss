@@ -36,7 +36,7 @@
   }
 
   &__description {
-    overflow-y: auto;
+    overflow-wrap: break-word;
     grid-area: desc;
     font-size: .9rem;
   }
@@ -81,14 +81,12 @@
     font-size: 1.3rem;
     margin-bottom: 20px;
     grid-area: title;
-    background-color: inherit;
     border-bottom: 1px solid #3a3b4d;
   }
 
   textarea {
     resize: vertical;
     margin-top: 15px;
-    border-color: $light;
   }
 
   .desc-toggle {

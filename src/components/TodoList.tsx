@@ -1,11 +1,14 @@
 import Todo from 'components/Todo';
-import {useContext} from 'react';
-import {TodosContext, TodosContextType} from 'pages/todos-page';
+import {FC} from 'react';
+import {ITodo} from 'models/ITodo';
 
-const TodoList = () => {
-    const {todos} = useContext(TodosContext) as TodosContextType;
+interface TodoListProps {
+    todos: ITodo[];
+}
+
+const TodoList: FC<TodoListProps> = ({todos}) => {
     if (todos.length === 0) {
-        return <h3 style={{textAlign: 'center', marginTop: 40}}>No todos added yet</h3>
+        return <h3 style={{textAlign: 'center', marginTop: 40}}>No todos found</h3>;
     }
 
     return (

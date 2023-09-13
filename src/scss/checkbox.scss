@@ -3,7 +3,9 @@
   width: 17px;
   height: 17px;
   border-radius: 5px;
-  box-shadow: 0 0 0 2px $bg-dark, 0 0 0 4px $light;
+  outline: 2px solid $light;
+  border: 3px solid $bg-dark;
+  //box-shadow: 0 0 0 2px $bg-dark, 0 0 0 4px $light;
   &.checked {
     background-color: $light;
   }

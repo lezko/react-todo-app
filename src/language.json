@@ -1,0 +1,16 @@
+{
+  "en": {
+    "home": {
+    },
+    "navbar": {
+      "home": "home",
+      "signUp": "sign up",
+      "signIn": "sign in",
+      "todos": "todos",
+      "users": "users",
+      "profile": "profile",
+      "settings": "settings",
+      "logout": "logout"
+    }
+  }
+}

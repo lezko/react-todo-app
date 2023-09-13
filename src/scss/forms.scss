@@ -22,7 +22,8 @@ input:-webkit-autofill,
 input:-webkit-autofill:hover,
 input:-webkit-autofill:focus,
 input:-webkit-autofill:active {
-  -webkit-box-shadow: 0 0 0 30px $bg-input-autofilled inset !important;
+  -webkit-box-shadow: 0 0 0 30px $bg-dark inset !important;
+  caret-color: $light;
 }
 
 input:-webkit-autofill {
@@ -30,11 +31,13 @@ input:-webkit-autofill {
 }
 
 input {
-  background-color: $bg-input;
+  font-size: 1.1rem;
+  background-color: transparent;
   color: inherit;
   border: none;
+  border-bottom: 1px solid $light;
   outline: none;
-  padding: 10px;
+  padding-block: 5px;
   width: 100%;
 }
 
@@ -43,6 +46,8 @@ textarea {
   width: 100%;
   border-radius: 5px;
   color: $light;
+  border-color: $light;
+  padding: 5px;
 }
 
 .login-form, .sign-up-form {
@@ -51,13 +56,15 @@ textarea {
   margin: 100px auto 0;
 
   label {
+    font-size: .9rem;
+    color: #5a5c6e;
     display: block;
     margin-bottom: 5px;
   }
 
   input {
     display: block;
-    margin-bottom: 10px;
+    margin-bottom: 15px;
     width: 100%;
   }
 
@@ -78,4 +85,15 @@ input[type="color"]::-webkit-color-swatch-wrapper {
 }
 input[type="color"]::-webkit-color-swatch {
   border: none;
+}
+
+select, option {
+  background-color: $bg-input;
+  color: $light;
+  border-color: $light;
+  padding: 5px;
+}
+option {
+  padding: 5px !important;
+  display: inline-block;
 }

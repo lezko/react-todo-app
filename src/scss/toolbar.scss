@@ -1,0 +1,25 @@
+.toolbar {
+  max-width: 400px;
+  margin: 0 auto 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  .new-todo-btn {
+    font-size: 1rem;
+    display: flex;
+    align-items: center;
+    padding: 7px 10px;
+
+    & > * + * {
+      margin-left: 5px
+    }
+  }
+}
+
+.toolbar-menu {
+  //box-shadow: 1px 1px 3px 2px #2c293d;
+  //background-color: #242835;
+  //border-radius: 5px;
+  //padding: 2px;
+}

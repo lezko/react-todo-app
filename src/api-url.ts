@@ -17,8 +17,38 @@ export class ApiUrl {
         return url + '/users';
     }
 
-    static getTodos() {
-        return url + '/todos';
+    static getTodos(page?: number, limit?: number, q?: string) {
+        let params = '';
+        if (typeof page === 'number') {
+            params += '?page=' + page;
+        }
+        if (typeof limit === 'number') {
+            params += '&limit=' + limit;
+        }
+        if (typeof q === 'string' && q.length) {
+            params += '&q=' + q;
+        }
+        return url + '/todos' + params;
+    }
+
+    static getTodosCount(q?: string) {
+        let params = '';
+        if (typeof q === 'string' && q.length) {
+            params += '?q=' + q;
+        }
+        return url + '/todos-count' + params;
+    }
+
+    static sendTodoRequest(id: number) {
+        return url + '/todo/' + id + '/privileges';
+    }
+
+    static getRequests() {
+        return url + '/requests';
+    }
+
+    static processRequest(id: number, accept: boolean) {
+        return url + '/todo/' + id + '/request';
     }
 
     private static todoWithId(id: number) {

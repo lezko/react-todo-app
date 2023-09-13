@@ -5,7 +5,7 @@ nav {
   left: 0;
   width: 100%;
   background-color: $purple;
-  padding: 10px 15px;
+  padding: 10px 20px;
   margin-bottom: 40px;
   display: flex;
   align-items: baseline;
@@ -79,6 +79,30 @@ nav {
     margin-right: 10px;
     width: 30px;
     height: 30px;
+  }
+
+  .bell {
+    .icon {
+      width: 20px;
+      height: 20px;
+    }
+    position: relative;
+    margin-left: 10px;
+    .count {
+      display: grid;
+      place-content: center;
+      position: absolute;
+      content: '';
+      top: -5px;
+      right: -5px;
+      width: 15px;
+      height: 15px;
+      border-radius: 50%;
+      background-color: red;
+      font-size: .8rem;
+      font-weight: 700;
+      color: $light;
+    }
   }
 
   @media (max-width: 470px) {
@@ -171,4 +195,59 @@ nav {
 
 nav .logout .icon, .nav-dropdown .logout .icon {
   margin-left: 5px;
+}
+
+.requests-modal {
+  h3 {
+    font-size: 1.4rem;
+    margin-bottom: 20px;
+  }
+  ul {
+    max-height: 400px;
+    overflow-y: auto;
+  }
+  ul > * + * {
+    margin-top: 10px;
+  }
+  li {
+    display: flex;
+    justify-content: space-between;
+  }
+  .request {
+    &__author {
+      font-style: italic;
+      font-weight: 600;
+    }
+    &__privilege {
+      font-style: italic;
+      font-weight: 600;
+      text-transform: capitalize;
+    }
+    &__title {
+      font-weight: 700;
+    }
+    &__buttons {
+      margin-left: 20px;
+      display: flex;
+      align-items: flex-start;
+    }
+    &__buttons > * + * {
+      margin-left: 5px;
+    }
+  }
+  .danger {
+    color: #713b2e;
+  }
+  @media (max-width: 470px) {
+    ul > * + * {
+      margin-top: 20px;
+    }
+    li {
+      display: block;
+    }
+    .request__buttons {
+      margin: 5px 0 0;
+      //justify-content: flex-end;
+    }
+  }
 }

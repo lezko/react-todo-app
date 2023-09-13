@@ -2,6 +2,7 @@ import {AppDispatch} from 'store/index';
 import {logInError, logInSuccess, startLogIn} from 'store/userSlice';
 import axios from 'axios';
 import {ApiUrl} from 'api-url';
+import {IAuthUser} from 'models/IAuthUser';
 
 // todo proper exception handling
 export function logIn(login: string, password: string) {
@@ -9,11 +10,8 @@ export function logIn(login: string, password: string) {
         try {
             dispatch(startLogIn());
             const response = await axios.post(ApiUrl.login(), JSON.stringify({login, password}));
-            // todo server rename jwt-token to token
-            const userData = Object.assign({}, response.data);
-            userData.token = response.data['jwt-token'];
-            delete userData['jwt-token'];
-            dispatch(logInSuccess(userData));
+            response.data.id = +response.data.id;
+            dispatch(logInSuccess(response.data));
         } catch (e: unknown) {
             if (axios.isAxiosError(e)) {
                 dispatch(logInError(e.response?.data.message || 'Server is not responding'));

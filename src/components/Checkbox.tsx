@@ -1,4 +1,4 @@
-import {FC} from 'react';
+import {FC, memo} from 'react';
 
 interface CheckboxProps {
     checked: boolean;
@@ -8,7 +8,7 @@ interface CheckboxProps {
     title?: string;
 }
 
-const Checkbox: FC<CheckboxProps> = ({checked, setChecked, disabled = false, className = '', title}) => {
+const Checkbox: FC<CheckboxProps> = memo(({checked, setChecked, disabled = false, className = '', title}) => {
     const classList = ['checkbox'];
     if (classList) {
         classList.push(className);
@@ -26,6 +26,6 @@ const Checkbox: FC<CheckboxProps> = ({checked, setChecked, disabled = false, cla
             className={classList.join(' ')}
         ></div>
     );
-};
+});
 
 export default Checkbox;

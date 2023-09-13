@@ -13,6 +13,7 @@
     "@types/react-redux": "^7.1.25",
     "antd": "^5.7.2",
     "axios": "^1.4.0",
+    "eslint": "8.22.0",
     "https": "^1.0.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
