@@ -145,8 +145,10 @@ const Navbar = () => {
                                                                  icon={faCircleUser} />
                                                 <span>{user.login}</span>
                                                 {user.role === UserRole.Admin &&
-                                                    <FontAwesomeIcon style={{color: user.color}} className="star"
-                                                                     icon={faStar} />}
+                                                    <FontAwesomeIcon
+                                                        className="star"
+                                                        icon={faStar}
+                                                    />}
                                             </a>
                                         </Dropdown>
                                     </ConfigProvider>
@@ -168,13 +170,17 @@ const Navbar = () => {
                                                                 has invited you to become a/an
                                                             </> : 'You were invited to become a/an'
                                                         }
-                                                        <span className="request__privilege"> {r.userPrivilege.toLowerCase()} </span>{' '}
+                                                        <span
+                                                            className="request__privilege"> {r.userPrivilege.toLowerCase()} </span>{' '}
                                                         of a todo
                                                         <span className="request__title"> {r.todoTitle}</span>
                                                     </div>
                                                     <div className="request__buttons">
-                                                        <button onClick={() => processRequest(r.todoId, true)}>Accept</button>
-                                                        <button className="danger" onClick={() => processRequest(r.todoId, false)}>Decline</button>
+                                                        <button onClick={() => processRequest(r.todoId, true)}>Accept
+                                                        </button>
+                                                        <button className="danger"
+                                                                onClick={() => processRequest(r.todoId, false)}>Decline
+                                                        </button>
                                                     </div>
                                                 </li>
                                             )}</ul>

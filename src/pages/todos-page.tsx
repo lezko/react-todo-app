@@ -107,7 +107,6 @@ const TodosPage = () => {
     };
 
     const dispatch = useAppDispatch();
-    const [showOnlyMyTodos, setShowOnlyMyTodos] = useState(settings.showOnlyMyTodos);
 
     async function fetchWithSearch(page: number, limit: number, searchStr: string, updateTotal: boolean) {
         setLoading(true);
@@ -125,7 +124,7 @@ const TodosPage = () => {
         axios.get(ApiUrl.getTodos(page, limit, searchStr))
             .then(res => {
                 setError('');
-                setTodos(res.data);
+                setTodos(res.data.sort((a: ITodo, b: ITodo) => b.id - a.id));
                 setSearchStr('');
                 setLastSearch(searchStr);
             })

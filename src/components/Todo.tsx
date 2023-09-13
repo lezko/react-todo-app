@@ -1,7 +1,7 @@
 import {createRef, FC, RefObject, useCallback, useContext, useState} from 'react';
 import {TodosContext, TodosContextType} from 'pages/todos-page';
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
-import {faCheck, faEdit, faTrash, faUserPlus, faXmark} from '@fortawesome/free-solid-svg-icons';
+import {faCheck, faEdit, faTrash, faUserPlus, faXmark, faStar} from '@fortawesome/free-solid-svg-icons';
 import useModal from 'antd/es/modal/useModal';
 import Toggle from 'components/Toggle';
 import Checkbox from 'components/Checkbox';
@@ -12,8 +12,9 @@ import {useSettings} from 'hooks/settings';
 import {ApiUrl} from 'api-url';
 import {useLoggedInUser} from 'hooks/user';
 import {UserPrivilege} from 'models/IUserTodoRelation';
-import {AutoComplete, Modal} from 'antd';
+import {AutoComplete, ConfigProvider, Modal} from 'antd';
 import {useUserList} from 'hooks/userList';
+import {UserRole} from 'models/IUser';
 
 interface TodoProps {
     todo: ITodo;
@@ -247,14 +248,24 @@ const Todo: FC<TodoProps> = ({todo}) => {
                         >
                             <>
                                 <h3 style={{marginBottom: 5, fontSize: '1.3rem'}}>Add user:</h3>
-                                <AutoComplete
-                                    value={userSearchStr}
-                                    onChange={data => setUserSearchStr(data)}
-                                    options={userSearchOptions}
-                                    onSearch={text => setUserSearchOptions(getMatchingUsers(userList.users, text).map(s => ({value: s})))}
-                                    onSelect={text => setUserSearchOptions(getMatchingUsers(userList.users, text).map(s => ({value: s})))}
-                                    style={{width: '100%'}}
-                                />
+                                {/* optionActiveBg*/}
+                                <ConfigProvider theme={{
+                                    components: {
+                                        Select: {
+                                            controlItemBgHover: 'rgb(37 39 60)'
+                                        }
+                                    }
+                                }}>
+                                    <AutoComplete
+
+                                        value={userSearchStr}
+                                        onChange={data => setUserSearchStr(data)}
+                                        options={userSearchOptions}
+                                        onSearch={text => setUserSearchOptions(getMatchingUsers(userList.users, text).map(s => ({value: s})))}
+                                        onSelect={text => setUserSearchOptions(getMatchingUsers(userList.users, text).map(s => ({value: s})))}
+                                        style={{width: '100%'}}
+                                    />
+                                </ConfigProvider>
                                 <select style={{marginTop: 10}} value={privilege} onChange={e => {
                                     const v = e.target.value;
                                     const nextPrivilege = v === 'OWNER' ? UserPrivilege.Owner : v === 'MODERATOR' ? UserPrivilege.Moderator : UserPrivilege.Reader;
@@ -263,15 +274,13 @@ const Todo: FC<TodoProps> = ({todo}) => {
                                     {privilegesOptions.map(o =>
                                         <option key={o} value={o}>{o}</option>
                                     )}
-                                    {/*<option value={UserPrivilege.Owner}>{UserPrivilege.Owner}</option>*/}
-                                    {/*<option value={UserPrivilege.Moderator}>{UserPrivilege.Moderator}</option>*/}
-                                    {/*<option value={UserPrivilege.Reader}>{UserPrivilege.Reader}</option>*/}
                                 </select>
                                 <div style={{marginBlock: 5, color: 'red'}} className="error">{addUserError}</div>
                             </>
                         </Modal>
                         {userPrivilege !== UserPrivilege.Moderator &&
-                            <button onClick={() => setAddUserModalOpen(true)}><FontAwesomeIcon icon={faUserPlus} /></button>
+                            <button onClick={() => setAddUserModalOpen(true)}><FontAwesomeIcon icon={faUserPlus} />
+                            </button>
                         }
                     </div>
                 );
@@ -304,6 +313,13 @@ const Todo: FC<TodoProps> = ({todo}) => {
         confirmUpdate({isCompleted: nextCompleted});
     }, []);
 
+    const privilegeSortOrder = {
+        [UserPrivilege.Creator]: 0,
+        [UserPrivilege.Owner]: 1,
+        [UserPrivilege.Moderator]: 2,
+        [UserPrivilege.Reader]: 3,
+    };
+
     return (
         <div className={'todo ' + (status === 'edit' ? 'edit' : '')}>
             {contextHolder}
@@ -319,12 +335,14 @@ const Todo: FC<TodoProps> = ({todo}) => {
                 />
             }
             {getTodoInfoHtml()}
-            <div
-                className="todo__author"
-            >
-                <ul>{todo.users.map(u => u.user.login).join(', ')}</ul>
-                {/*{creator.login} {creator.role === UserRole.Admin && <FontAwesomeIcon icon={faStar} />}*/}
-            </div>
+            <ul className="todo__collaborators">
+                {todo.users.sort((a, b) => privilegeSortOrder[a.privilege] - privilegeSortOrder[b.privilege]).map(u =>
+                    <li title={u.privilege.toLowerCase()} className={'collaborator ' + u.privilege.toLowerCase()}
+                        key={u.user.id}>
+                        {u.user.login} {u.user.role === UserRole.Admin && <FontAwesomeIcon icon={faStar} />}
+                    </li>
+                )}
+            </ul>
 
             {getButtonsHtml()}
             {error && <div style={{color: 'red'}}>{error}</div>}
