@@ -16,6 +16,7 @@ import {getTodoCreator} from 'helpers/todoHelpers';
 import {setUserList} from 'store/userListSlice';
 import {useUserList} from 'hooks/userList';
 import {useRefreshTodo} from 'hooks/refreshTodo';
+import {refresh} from 'store/refreshTodoSlice';
 
 export type TodosContextType = { todos: ITodo[], setTodos: (todos: ITodo[]) => void };
 export const TodosContext = createContext<TodosContextType | null>(null);
@@ -88,7 +89,7 @@ const TodosPage = () => {
         axios.post(ApiUrl.createTodo(), JSON.stringify(data))
             .then(res => {
                 setTodos([res.data, ...todos]);
-                setTodosCount(prevState => prevState + 1);
+                dispatch(refresh());
                 setNewTodoError('');
                 setData({title: '', description: ''});
                 setNewTodoModalOpen(false);

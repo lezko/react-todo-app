@@ -15,6 +15,8 @@ import {UserPrivilege} from 'models/IUserTodoRelation';
 import {AutoComplete, ConfigProvider, Modal} from 'antd';
 import {useUserList} from 'hooks/userList';
 import {UserRole} from 'models/IUser';
+import {useAppDispatch} from 'store';
+import {refresh} from 'store/refreshTodoSlice';
 
 interface TodoProps {
     todo: ITodo;
@@ -45,12 +47,14 @@ const Todo: FC<TodoProps> = ({todo}) => {
 
     const [{confirm}, contextHolder] = useModal();
     const settings = useSettings();
+    const dispatch = useAppDispatch();
 
     const deleteTodo = () => {
         setPending(true);
         axios.delete(ApiUrl.deleteTodo(todo.id))
             .then(() => {
-                setTodos(todos.filter(t => t.id !== todo.id));
+                // setTodos(todos.filter(t => t.id !== todo.id));
+                dispatch(refresh());
                 setError('');
             })
             .catch(e => {
