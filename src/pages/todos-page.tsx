@@ -34,7 +34,6 @@ const TodosPage = () => {
     const [searchStr, setSearchStr] = useState('');
     const [lastSearch, setLastSearch] = useState('');
 
-    const settings = useSettings();
     const {user} = useLoggedInUser();
     const userList = useUserList();
     useEffect(() => {
@@ -71,8 +70,7 @@ const TodosPage = () => {
     const {value: refreshValue} = useRefreshTodo();
 
     useEffect(() => {
-        const updateTotal = !todosCount;
-        fetchWithSearch(page, limit, searchStr, updateTotal);
+        fetchWithSearch(page, limit, searchStr, true);
     }, [refreshValue]);
 
     const [newTodoModalOpen, setNewTodoModalOpen] = useState(false);
@@ -90,6 +88,7 @@ const TodosPage = () => {
         axios.post(ApiUrl.createTodo(), JSON.stringify(data))
             .then(res => {
                 setTodos([res.data, ...todos]);
+                setTodosCount(prevState => prevState + 1);
                 setNewTodoError('');
                 setData({title: '', description: ''});
                 setNewTodoModalOpen(false);
@@ -202,26 +201,29 @@ const TodosPage = () => {
                             {lastSearch &&
                                 <div style={{display: 'flex', alignItems: 'center', marginBottom: 15}}>
                                     <span style={{lineHeight: 1}}>Showing results for "<i>{lastSearch}</i>"</span>
-                                    <FontAwesomeIcon style={{cursor: 'pointer', marginLeft: 10, width: 20, height: 20}}
-                                                     onClick={() => {
-                                                         setSearchStr('');
-                                                         fetchWithSearch(1, limit, '', true);
-                                                     }} icon={faXmark} />
+                                    <FontAwesomeIcon
+                                        style={{cursor: 'pointer', marginLeft: 10, width: 20, height: 20}}
+                                        onClick={() => {
+                                            setSearchStr('');
+                                            fetchWithSearch(1, limit, '', true);
+                                        }} icon={faXmark} />
                                 </div>
                             }
                         </div>
 
                         <TodoList
-                            todos={settings.showOnlyMyTodos ? todos.filter(t => user.id === getTodoCreator(t).id) : todos}
+                            todos={todos}
                         />
                         <div className="container">
                             <ul className="page-btns">{Array(pageButtonsCount).fill(null).map((_, i) =>
                                 <li key={i}>
-                                    <button className={i + 1 === page ? 'active' : ''}
-                                            onClick={() => {
-                                                setPage(i + 1);
-                                                fetchWithSearch(i + 1, limit, lastSearch, false);
-                                            }}>{i + 1}</button>
+                                    <button
+                                        className={i + 1 === page ? 'active' : ''}
+                                        onClick={() => {
+                                            setPage(i + 1);
+                                            fetchWithSearch(i + 1, limit, lastSearch, false);
+                                        }}>{i + 1}
+                                    </button>
                                 </li>
                             )}</ul>
                         </div>
