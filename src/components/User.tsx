@@ -85,25 +85,11 @@ const User: FC<UserProps> = ({user, onUpdate}) => {
         });
     }, [user.isInBan]);
 
-    const handleIsBannedChange = (nextIsBanned: boolean) => {
+    const handleIsBannedChange = useCallback((nextIsBanned: boolean) => {
         setIsBanned(nextIsBanned);
         setPending(true);
-        // todo make server handle ban requests as regular update
-        axios.put(ApiUrl.banUser(user.id))
-            .then(() => {
-                onUpdate({...user, isInBan: nextIsBanned});
-            })
-            .catch(e => {
-                resetData();
-                // todo show error in modal
-                if (axios.isAxiosError(e)) {
-                    console.error(e.response?.data.message || e.message);
-                } else {
-                    console.error(e.message);
-                }
-            })
-            .finally(() => setPending(false));
-    };
+        confirmUpdate({isInBan: nextIsBanned});
+    }, []);
 
     const confirmUpdate = (updatedData: any) => {
         setPending(true);

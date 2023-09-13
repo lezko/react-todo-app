@@ -108,11 +108,6 @@ const TodosPage = () => {
 
     const dispatch = useAppDispatch();
     const [showOnlyMyTodos, setShowOnlyMyTodos] = useState(settings.showOnlyMyTodos);
-    const handleChangeShowOnlyMy = () => {
-        const nextShowOnlyMy = !showOnlyMyTodos;
-        setShowOnlyMyTodos(nextShowOnlyMy);
-        dispatch(setSettings({...settings, showOnlyMyTodos: nextShowOnlyMy}));
-    };
 
     async function fetchWithSearch(page: number, limit: number, searchStr: string, updateTotal: boolean) {
         setLoading(true);
@@ -184,24 +179,39 @@ const TodosPage = () => {
                                 Total: {todosCount} todos
                             </div>
                         </div>
+
                         <div className="container">
                             <div style={{display: 'flex', marginBottom: 20}}>
-                                <input type="text" placeholder="Search..." value={searchStr}
-                                       onChange={e => setSearchStr(e.target.value)} />
+                                <input
+                                    type="text"
+                                    placeholder="Search..."
+                                    value={searchStr}
+                                    onKeyDown={e => {
+                                        if (e.key === 'Enter') {
+                                            fetchWithSearch(1, limit, searchStr, true);
+                                        }
+                                    }}
+                                    onChange={e => {
+                                        setSearchStr(e.target.value);
+                                    }}
+                                />
                                 <button disabled={!searchStr} onClick={() => {
                                     fetchWithSearch(1, limit, searchStr, true);
-                                }} style={{marginLeft: 10}}>OK</button>
+                                }} style={{marginLeft: 10}}>OK
+                                </button>
                             </div>
                             {lastSearch &&
                                 <div style={{display: 'flex', alignItems: 'center', marginBottom: 15}}>
                                     <span style={{lineHeight: 1}}>Showing results for "<i>{lastSearch}</i>"</span>
-                                    <FontAwesomeIcon style={{cursor: 'pointer', marginLeft: 10, width: 20, height: 20}} onClick={() => {
-                                        setSearchStr('');
-                                        fetchWithSearch(1, limit, '', true);
-                                    }} icon={faXmark} />
+                                    <FontAwesomeIcon style={{cursor: 'pointer', marginLeft: 10, width: 20, height: 20}}
+                                                     onClick={() => {
+                                                         setSearchStr('');
+                                                         fetchWithSearch(1, limit, '', true);
+                                                     }} icon={faXmark} />
                                 </div>
                             }
                         </div>
+
                         <TodoList
                             todos={settings.showOnlyMyTodos ? todos.filter(t => user.id === getTodoCreator(t).id) : todos}
                         />

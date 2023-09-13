@@ -1,9 +1,13 @@
 .todos-page {
   .page-btns {
     margin-top: 20px;
-    display: grid;
-    gap: 5px;
-    grid-template-columns: repeat(auto-fit, minmax(50px, 1fr));
+    display: flex;
+    justify-content: center;
+    margin-inline: -5px;
+    flex-wrap: wrap;
+    button {
+      margin: 5px;
+    }
     button.active {
       box-shadow: 0 0 0 2px $light;
     }

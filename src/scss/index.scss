@@ -45,6 +45,7 @@ code {
 
 .app {
   .mobile-only {display: none}
+  padding-bottom: 20px;
   @media (max-width: 470px) {
     padding: 60px 15px 15px;
     .mobile-only {display: block}
