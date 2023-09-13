@@ -38,7 +38,8 @@ const SettingsPage = () => {
     }
 
     return (
-        <div className="container settings-page" style={{textAlign: 'center'}}>
+        <div className="container settings-page">
+            <h2 style={{marginBottom: 10}}>Settings</h2>
             <ul className="settings">
                 <li>
                     <span>Confirm before change user role</span>
