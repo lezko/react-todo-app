@@ -7,14 +7,14 @@
   grid-template-areas:
   "checkbox title title title"
   "checkbox desc desc desc"
-  "checkbox author spinner buttons";
+  "checkbox collaborators spinner buttons";
 
   &.edit {
     grid-template-columns: auto 1fr auto;
     grid-template-areas:
   "title title title"
   "desc desc desc"
-  "author spinner buttons";
+  "collaborators spinner buttons";
   }
   &__checkbox {
     grid-area: checkbox;
@@ -59,10 +59,27 @@
     }
   }
 
-  &__author {
-    grid-area: author;
+  &__collaborators {
     align-self: end;
-    font-size: .7rem;
+    grid-area: collaborators;
+    display: flex;
+    flex-wrap: wrap;
+    .collaborator {
+      font-size: .7rem;
+      margin-right: 5px;
+      &.creator {
+        color: gold;
+      }
+      &.owner {
+        color: cyan;
+      }
+      &.moderator {
+        color: green
+      }
+      &.reader {
+        color: gray
+      }
+    }
   }
 
   .input-holder {
