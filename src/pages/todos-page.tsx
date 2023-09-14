@@ -123,7 +123,9 @@ const TodosPage = () => {
         axios.get(ApiUrl.getTodos(page, limit, searchStr))
             .then(res => {
                 setError('');
-                setTodosCount(receivedCount);
+                if (updateTotal) {
+                    setTodosCount(receivedCount);
+                }
                 setTodos(res.data.sort((a: ITodo, b: ITodo) => b.id - a.id));
                 setSearchStr('');
                 setLastSearch(searchStr);
