@@ -8,11 +8,8 @@ import {ApiUrl} from 'api-url';
 import {Button, Modal} from 'antd';
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
 import {faPlus, faXmark} from '@fortawesome/free-solid-svg-icons';
-import {useSettings} from 'hooks/settings';
 import {useLoggedInUser} from 'hooks/user';
-import {setSettings} from 'store/settingsSlice';
 import {useAppDispatch} from 'store';
-import {getTodoCreator} from 'helpers/todoHelpers';
 import {setUserList} from 'store/userListSlice';
 import {useUserList} from 'hooks/userList';
 import {useRefreshTodo} from 'hooks/refreshTodo';
@@ -85,8 +82,7 @@ const TodosPage = () => {
         e.preventDefault();
         setPending(true);
         axios.post(ApiUrl.createTodo(), JSON.stringify(data))
-            .then(res => {
-                setTodos([res.data, ...todos]);
+            .then(() => {
                 dispatch(refresh());
                 setNewTodoError('');
                 setData({title: '', description: ''});

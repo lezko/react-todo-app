@@ -3,6 +3,7 @@ import axios from 'axios';
 import {useAppDispatch} from 'store';
 import {logInError, logInSuccess} from 'store/userSlice';
 import {ApiUrl} from 'api-url';
+import Spinner from 'components/Spinner';
 
 const SignUpPage = () => {
     const dispatch = useAppDispatch();
@@ -62,7 +63,10 @@ const SignUpPage = () => {
             <label htmlFor="confirmPassword">Confirm Password:</label>
             <input disabled={pending} onChange={handleChange} value={data.confirmPassword} type="password" name="confirmPassword"
                    id="confirmPassword" />
-            <button disabled={pending} type="submit">Sign up</button>
+            <div style={{display: 'flex', alignItems: 'center'}}>
+                <button disabled={pending} type="submit">Sign up</button>
+                {pending && <Spinner />}
+            </div>
             <div className="error" style={{color: 'red'}}>{error}</div>
         </form>
     );
