@@ -21,7 +21,7 @@ const ResetLoginForm = () => {
         setStatus('pending');
         axios.put(ApiUrl.resetLogin(user.id), JSON.stringify({login}))
             .then(res => {
-                dispatch(logInSuccess({...user, login, ...res}));
+                dispatch(logInSuccess({...user, login, ...res.data}));
                 setError('');
             })
             .catch(e => {
